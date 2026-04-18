@@ -1,0 +1,44 @@
+import { supabase } from './supabase';
+
+const FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-users`;
+
+export type AuthUser = {
+  id: string;
+  email: string | null;
+  created_at: string;
+  last_sign_in_at: string | null;
+};
+
+async function call<T>(body: object): Promise<T> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const res = await fetch(FN_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+    },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json?.error ?? `admin-users ${res.status}`);
+  return json as T;
+}
+
+export async function listAuthUsers(): Promise<AuthUser[]> {
+  const all: AuthUser[] = [];
+  for (let page = 1; page <= 10; page++) {
+    const { users } = await call<{ users: AuthUser[] }>({ op: 'list', page, perPage: 1000 });
+    all.push(...users);
+    if (users.length < 1000) break;
+  }
+  return all;
+}
+
+export async function getAuthUser(userId: string): Promise<AuthUser | null> {
+  try {
+    const { user } = await call<{ user: AuthUser }>({ op: 'get', user_id: userId });
+    return user;
+  } catch {
+    return null;
+  }
+}
