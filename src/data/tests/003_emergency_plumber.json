@@ -1,0 +1,39 @@
+{
+  "id": "003_emergency_plumber",
+  "category": "tradespeople",
+  "description": "User has an emergency plumbing issue, asks for a plumber, follows up on rates and availability",
+  "messages": [
+    {
+      "role": "user",
+      "content": "I need a plumber urgently, pipe has burst"
+    },
+    {
+      "role": "agent",
+      "content": "Right, let's get this sorted quick. Here are plumbers in the area who cover emergency call-outs:\n\n- **Ahmed Plumbing Services** — covers Batley & Dewsbury, emergency available, call **07XXX XXXXXX**\n- **Saddiq & Sons Plumbing** — Heckmondwike & Spen Valley, 24hr emergency, **07XXX XXXXXX**\n- **A1 Plumbers Dewsbury** — rated 4.8/5, emergency jobs, **01924 XXXXXX**\n\nRing the emergency ones first — they'll come out same day. Turn your stopcock off in the meantime if you haven't already."
+    },
+    {
+      "role": "user",
+      "content": "What's the going rate for an emergency call out?"
+    },
+    {
+      "role": "agent",
+      "content": "For emergency call-outs in this area you're generally looking at **£80–£150** just to come out, then labour on top depending on the job. Burst pipes can vary a lot — a simple fix might be £150 all in, a bigger repair could be £300+.\n\nThe ones I listed should be able to give you a rough quote over the phone before they come out. Worth asking upfront so there's no surprises."
+    },
+    {
+      "role": "user",
+      "content": "Is there anyone cheaper?"
+    },
+    {
+      "role": "agent",
+      "content": "For a genuine emergency, cheap isn't always the move — a bodge job on a burst pipe will cost you more later. That said, if you want to shop around a bit:\n\n- Try ringing all three I mentioned and ask for their emergency rate upfront\n- Local Facebook groups like **Batley & Dewsbury Community** often have people recommending trusted cheaper tradespeople\n\nAlternatively, if it's not actively flooding and you can contain it, a non-emergency call tomorrow will be half the price."
+    },
+    {
+      "role": "user",
+      "content": "Is there anyone who covers Birstall?"
+    },
+    {
+      "role": "agent",
+      "content": "Yes — Birstall is Spen Valley so the tradespeople covering that patch should reach you. **Saddiq & Sons** specifically lists Spen Valley in their area covered, so they're your best bet.\n\nIf none of those work out, let me know and I can see if there's anyone else on record."
+    }
+  ]
+}

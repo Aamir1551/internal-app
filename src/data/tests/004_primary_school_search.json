@@ -1,0 +1,39 @@
+{
+  "id": "004_primary_school_search",
+  "category": "schools",
+  "description": "Family moving to Batley looks for primary schools, asks about Ofsted ratings and location",
+  "messages": [
+    {
+      "role": "user",
+      "content": "We're moving to Batley soon and need to find a primary school for our 6-year-old. What are the options?"
+    },
+    {
+      "role": "agent",
+      "content": "Welcome to the area! There are a good few primary schools in Batley to choose from:\n\n- **Mount Pleasant Primary School** — Batley, Ofsted: Good\n- **Batley Parish CE Primary School** — Church of England, Batley town centre, Ofsted: Good\n- **St Mary's RC Primary School** — Catholic school, Batley, Ofsted: Good\n- **Springfield Primary School** — Batley Carr area, Ofsted: Requires Improvement\n- **Carlinghow Princess Royal Primary** — well regarded locally, Batley, Ofsted: Good\n\nDepends where in Batley you're moving to — catchment areas matter a lot for primary places. Where roughly are you settling?"
+    },
+    {
+      "role": "user",
+      "content": "We're near the town centre"
+    },
+    {
+      "role": "agent",
+      "content": "In that case **Batley Parish CE Primary** is probably your closest — it's right in the town centre area. **Mount Pleasant** is also walkable from most of the central streets.\n\nBoth are rated Good by Ofsted. Batley Parish is Church of England but welcomes all faiths — it's one of the more established schools in the area."
+    },
+    {
+      "role": "user",
+      "content": "Is there a Muslim school or Islamic school nearby?"
+    },
+    {
+      "role": "agent",
+      "content": "I had a look and there's no dedicated Islamic primary school in Batley itself. The nearest options are:\n\n- **Feversham Primary Academy** (Bradford) — Islamic-ethos school, well regarded, about 20 minutes away\n- **Hifz and Islamic studies** at local madressas — several in Batley and Dewsbury run after-school and weekend programmes alongside mainstream school\n\nMost Batley primaries have significant Muslim pupil populations and are familiar with prayer arrangements, halal meals, and religious observances — so a standard school here often meets needs pretty well in practice. Worth visiting and asking directly."
+    },
+    {
+      "role": "user",
+      "content": "What about secondary schools?"
+    },
+    {
+      "role": "agent",
+      "content": "For secondary in Batley:\n\n- **Batley Girls' High School** — girls only, Ofsted: Good, strong community reputation\n- **Batley Boys' High School** (Batley Grammar) — Ofsted: Good, one of the older schools in town\n- **Heckmondwike Grammar School** — selective grammar, requires the 11+, rated Outstanding. Worth it if your child is academic — it's just a short bus ride from Batley\n\nIf you're open to Dewsbury, **Westborough High School** is another option nearby."
+    }
+  ]
+}

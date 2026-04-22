@@ -1,0 +1,47 @@
+{
+  "id": "001_food_recommendation",
+  "category": "food",
+  "description": "User asks for a food recommendation, drills into a specific place, asks about halal status and delivery",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Can you recommend me a food place?"
+    },
+    {
+      "role": "agent",
+      "content": "Depends what you're in the mood for! A few solid options:\n\n- **Bar B Que Base** — if you want wings, they do a single wing for 75p. Unbeatable for snacking.\n- **Chickano's** — proper portions, their 3-pack wings is £4.39 and honestly much tastier.\n- **Ashpazi's** — if you want a proper sit-down meal, their Jericho Platter (£35) is lamb chops, koobideh, chicken tikka — the works. Great for sharing.\n\nWhat are you feeling — quick bite or a proper meal?"
+    },
+    {
+      "role": "user",
+      "content": "Tell me more about Ashpazi's"
+    },
+    {
+      "role": "agent",
+      "content": "**Ashpazi's** is one of the better Persian/Afghan spots in the area. The Jericho Platter at £35 feeds about 4 people and comes with a proper mix of grilled meats. They've also got individual mains if you're eating alone.\n\nThey're on the Batley side — worth the trip if you've never been. Good for family dinners or when you want something a bit more substantial than a takeaway box."
+    },
+    {
+      "role": "user",
+      "content": "Is it halal?"
+    },
+    {
+      "role": "agent",
+      "content": "Yes, Ashpazi's is listed as halal in my records.\n\n> Just to be clear though — always double-check directly with the restaurant if it matters to you, especially for religious requirements. What I have on record may not always be fully up to date."
+    },
+    {
+      "role": "user",
+      "content": "Do they do delivery?"
+    },
+    {
+      "role": "agent",
+      "content": "Yes — Ashpazi's is on **Just Eat**, so you can order from there. They also have their own number if you'd rather call direct: worth ringing for larger orders as they sometimes do better deals over the phone than the app."
+    },
+    {
+      "role": "user",
+      "content": "What about somewhere cheaper, like under a fiver?"
+    },
+    {
+      "role": "agent",
+      "content": "Loads of options under £5 in Batley. A few things that'll fill you up:\n\n- **Bar B Que Base** — wings from 75p each, so you can mix and match\n- **Chickano's** — 3-pack wings for £4.39\n- Most local chicken shops do meal deals in that range too\n\nAnything specific you fancy — burgers, wraps, pizza? I can narrow it down."
+    }
+  ]
+}

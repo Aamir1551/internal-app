@@ -1,0 +1,39 @@
+{
+  "id": "007_job_search",
+  "category": "jobs",
+  "description": "User looks for local work, narrows down by category, asks about part-time options",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Are there any jobs going in Batley or Dewsbury?"
+    },
+    {
+      "role": "agent",
+      "content": "Yes, a few things on the board right now:\n\n- **Retail Assistant** — local shop in Batley town centre, part-time, flexible hours\n- **Healthcare Support Worker** — Dewsbury District Hospital area, full-time, NHS-adjacent\n- **Teaching Assistant** — primary school in Heckmondwike, term-time only\n- **Warehouse Operative** — Dewsbury industrial estate, full-time, immediate start\n- **Community Support Worker** — charity in Batley, part-time, working with vulnerable adults\n\nWhat kind of work are you looking for?"
+    },
+    {
+      "role": "user",
+      "content": "Something part time, I've got kids so need flexibility"
+    },
+    {
+      "role": "agent",
+      "content": "For part-time with flexibility:\n\n- **Retail Assistant (Batley)** — listed as flexible hours, good for fitting around school runs\n- **Community Support Worker (Batley)** — part-time, and often these roles have some schedule flexibility depending on the client rota\n- **Teaching Assistant (Heckmondwike)** — term-time only, so you get school holidays off which is ideal with kids\n\nThe TA role is probably the most family-friendly overall — same hours as the kids, same holidays. Want the contact details for any of these?"
+    },
+    {
+      "role": "user",
+      "content": "Yes the teaching assistant one please"
+    },
+    {
+      "role": "agent",
+      "content": "The **Teaching Assistant** role is at **Heckmondwike Grammar School** — here's what I found:\n\n- **Hours:** Part-time, term-time only\n- **Contact:** hr@heckgrammar.co.uk\n- **Website:** heckgrammar.co.uk — the full job listing with application details is under their vacancies page\n- **Deadline:** Worth checking now as TA roles at grammar schools fill fast\n\nThey usually want a cover letter explaining why you want to work with children — keep it short and genuine."
+    },
+    {
+      "role": "user",
+      "content": "Any volunteering opportunities too? I want to build up my CV"
+    },
+    {
+      "role": "agent",
+      "content": "Good thinking. A few volunteering roles in the area:\n\n- **Foodbank volunteer** — Dewsbury Foodbank, flexible shifts, great for community/charity CV experience\n- **Mentoring volunteer** — working with young people in Batley, good for education sector roles\n- **Community events helper** — various local organisations, ad hoc\n- **Al-Hikmah Centre** — regularly needs volunteers for events and admin\n\nIf you're eyeing the TA route, volunteering in a school is golden — ask your local primary if they take parent helpers or reading volunteers. Most do and it gets your foot in the door."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "009_budget_food",
+  "category": "food",
+  "description": "User on a tight budget asks for the cheapest food options, follows up on specific items and meal deals",
+  "messages": [
+    {
+      "role": "user",
+      "content": "What's the cheapest food I can get in Batley?"
+    },
+    {
+      "role": "agent",
+      "content": "Genuinely hard to beat **Bar B Que Base** for cheap eats — single wings from **75p** each. You can literally eat for under £2 if you want.\n\nOther cheap options:\n- **Chickano's** — 3-pack wings for £4.39\n- Most chicken shops on the main road do a wrap or box meal for around £3–£4\n- Local Asian sweet shops (mithai shops) do samosas and pakoras for pennies\n\nWhat are you after — something quick and filling, or literally the cheapest thing possible?"
+    },
+    {
+      "role": "user",
+      "content": "Quick and filling, ideally under £5"
+    },
+    {
+      "role": "agent",
+      "content": "Under £5 and filling — here's what I'd go for:\n\n- **Chickano's** — 3-pack wings meal deal, comes with sides, around £4–5\n- **Any local chip shop** — large chips + gravy is usually £2.50–£3. Massive portions.\n- **Pakistani bakeries** on the Bradford Road side — fresh naan with curry for often under £3, no frills but incredibly filling\n- **Bar B Que Base** — load up on wings, you can eat well for £4\n\nChip shop is probably the best calorie-per-pound value in the whole area if I'm honest."
+    },
+    {
+      "role": "user",
+      "content": "Any meal deals going on anywhere?"
+    },
+    {
+      "role": "agent",
+      "content": "I don't have specific meal deal listings in my records — these change too often to track reliably. \n\nBut a few tips:\n- Most chicken shops in Batley have an unofficial deal if you ask — \"what can I get for a fiver?\" usually gets you sorted\n- Check their social media pages — places like Chickano's sometimes post deals on Instagram\n- Lunchtime is deal time in most local takeaways (12–2pm usually)\n\nIf you're a regular somewhere, they'll look after you."
+    },
+    {
+      "role": "user",
+      "content": "What about desserts? Anything cheap?"
+    },
+    {
+      "role": "agent",
+      "content": "Dewsbury has a better dessert scene than Batley, but there are options:\n\n- **Local mithai shops** — gulab jamun, barfi, and halwa by the piece, often 50p–£1 each. Genuinely good and cheap.\n- **Pakistani bakeries** — fresh jalebi is sometimes made to order and dirt cheap\n- Some takeaways in Batley have started doing brownies and waffles — check the newer spots on social media\n\nFor a proper dessert parlour experience you're probably looking at Dewsbury or Heckmondwike. Worth a short drive for the variety."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "010_kids_activities",
+  "category": "activities_clubs",
+  "description": "Parent asks for activities and clubs for children, asks indoor/outdoor split, follows up on football clubs",
+  "messages": [
+    {
+      "role": "user",
+      "content": "What is there to do with kids in Batley?"
+    },
+    {
+      "role": "agent",
+      "content": "Batley's got a decent amount for kids depending on their age:\n\n**Outdoor:**\n- **Wilton Park** — big open green space, playground, duck pond. Free.\n- **Batley Sports & Tennis Centre** — outdoor courts, sports pitches\n- Various parks and recreation grounds around Batley Carr and Mount Pleasant\n\n**Indoor:**\n- **Bagshaw Museum** — free, good for curious kids, interactive exhibits\n- Local sports centres have swimming sessions\n- Soft play options in Dewsbury (short drive)\n\n**Clubs & activities:**\n- Football, cricket, and martial arts clubs across the area\n- After-school Quran/madressa classes if that's relevant\n\nHow old are they and what are they into?"
+    },
+    {
+      "role": "user",
+      "content": "He's 8, loves football"
+    },
+    {
+      "role": "agent",
+      "content": "Good age for grassroots football. A few clubs in the area:\n\n- **Batley Boys FC** — well-established local youth football club, takes players from age 6+\n- **Spen Valley AFC** — covers the Heckmondwike/Cleckheaton area, strong youth setup\n- **Hanging Heaton FC** — respected local club with junior teams\n- Various school leagues and Sunday morning teams that operate around Batley\n\nMost of these train midweek and play on Sundays. For an 8-year-old, the Under 9s teams are where he'd slot in — contact them now as squads fill up before the season starts.\n\nWant contact details for any of them?"
+    },
+    {
+      "role": "user",
+      "content": "Yes the Batley Boys one please"
+    },
+    {
+      "role": "agent",
+      "content": "**Batley Boys FC** — here's what I found:\n\n- **Contact:** batleyboysfc@gmail.com\n- **Facebook:** facebook.com/BatleyBoysFC — they post training schedules and trial dates here\n- **Training:** Sunday mornings, usually at Batley Sports & Tennis Centre pitches\n- **Under 9s manager:** Listed on their Facebook — best to send a message there for youth team queries as it goes straight to the right person\n\nThey're a friendly club — drop them a message this week and you should hear back quickly."
+    },
+    {
+      "role": "user",
+      "content": "Any indoor sports for rainy days?"
+    },
+    {
+      "role": "agent",
+      "content": "For rainy days:\n\n- **Batley Sports & Tennis Centre** — indoor sports hall, badminton, basketball, football sessions. Check their timetable for kids' open sessions.\n- **Dewsbury Rams community sessions** — the rugby league club sometimes runs indoor youth activity days\n- **Swimming** — Dewsbury Sports Centre has a pool with family sessions\n- **Soft play** — there are a couple of options in Dewsbury and Heckmondwike, about a 10-minute drive\n- **Bowling** — Dewsbury Bowl is nearby if you want something more casual\n\nSports centre is probably your go-to for an active rainy day at 8 years old. Worth picking up their activity schedule."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "006_weekend_events",
+  "category": "events",
+  "description": "User asks what's on this weekend, finds an event, asks for details and how to get tickets",
+  "messages": [
+    {
+      "role": "user",
+      "content": "What's on this weekend in Batley or Dewsbury?"
+    },
+    {
+      "role": "agent",
+      "content": "Coming up this weekend:\n\n- **UK Wrestling: Day of Reckoning** — Saturday 25 April, time TBC, venue TBC. Local wrestling event — usually a good laugh if you've never been.\n- **Dewsbury Market** — running as normal Saturday morning, Dewsbury town centre\n- A couple of community announcements for events at local masjids too — let me know if you want those\n\nAnything specific you're after — family stuff, evening out, free events?"
+    },
+    {
+      "role": "user",
+      "content": "Tell me more about the wrestling"
+    },
+    {
+      "role": "agent",
+      "content": "**UK Wrestling: Day of Reckoning**\n\n- **Date:** Saturday, 25 April 2026\n- **Organiser:** UK Wrestling\n- **Ticket price:** Listed on their website — I'd check there for exact pricing\n\nI don't have the exact venue or time in my records for this one. Worth searching \"UK Wrestling Day of Reckoning Batley 2026\" to pull up the full details — or I can try that for you now if you want."
+    },
+    {
+      "role": "user",
+      "content": "Yes please search it"
+    },
+    {
+      "role": "agent",
+      "content": "Here's what I found:\n\n**UK Wrestling: Day of Reckoning** is taking place at **Batley Sports & Tennis Centre** on Saturday 25 April. Doors open at 6:30 PM, first bell at 7:30 PM.\n\nTickets are available online — adults around £15, kids £8. Family tickets available too. It's an all-ages event so good for a family night out.\n\nWorth booking in advance — these local wrestling shows tend to sell out."
+    },
+    {
+      "role": "user",
+      "content": "Any free events on Sunday?"
+    },
+    {
+      "role": "agent",
+      "content": "Nothing specifically free this Sunday in my records. A few things worth knowing though:\n\n- **Dewsbury Country Park** and the nature spots around Heckmondwike are always free and decent for a walk if the weather holds\n- Local masjids sometimes have open-door community events on Sunday afternoons — worth checking with your local one\n- **Batley Market** runs on some Sundays too\n\nIf you're happy to drive 20 minutes, there's usually more going on in Leeds on Sundays. Want me to check what's near Batley specifically?"
+    }
+  ]
+}

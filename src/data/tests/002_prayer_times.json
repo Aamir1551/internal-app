@@ -1,0 +1,47 @@
+{
+  "id": "002_prayer_times",
+  "category": "prayer_times",
+  "description": "User asks about Jummah time at a local mosque, follows up with Asr, then asks about a different mosque",
+  "messages": [
+    {
+      "role": "user",
+      "content": "What time is Jummah today at Markazi?"
+    },
+    {
+      "role": "agent",
+      "content": "Today's Jummah at **Masjid-e-Markazi (Batley)**:\n\n- **Begin:** 1:00 PM\n- **Jama'ah:** 1:30 PM\n\nDon't be late — it fills up fast on Fridays."
+    },
+    {
+      "role": "user",
+      "content": "And what about Asr?"
+    },
+    {
+      "role": "agent",
+      "content": "**Asr today at Masjid-e-Markazi (Batley):**\n\n- **Begin:** 4:45 PM\n- **Jama'ah:** 5:15 PM"
+    },
+    {
+      "role": "user",
+      "content": "What about at Jamia mosque in Dewsbury?"
+    },
+    {
+      "role": "agent",
+      "content": "**Asr today at Jamia Masjid (Dewsbury):**\n\n- **Begin:** 4:45 PM\n- **Jama'ah:** 5:10 PM\n\nSlightly earlier jama'ah than Markazi."
+    },
+    {
+      "role": "user",
+      "content": "When's Maghrib today?"
+    },
+    {
+      "role": "agent",
+      "content": "**Maghrib today at Jamia Masjid (Dewsbury):**\n\n- **Begin:** 8:12 PM\n- **Jama'ah:** 8:17 PM\n\nWant Isha times too?"
+    },
+    {
+      "role": "user",
+      "content": "Yes please"
+    },
+    {
+      "role": "agent",
+      "content": "**Isha today at Jamia Masjid (Dewsbury):**\n\n- **Begin:** 9:45 PM\n- **Jama'ah:** 10:00 PM"
+    }
+  ]
+}

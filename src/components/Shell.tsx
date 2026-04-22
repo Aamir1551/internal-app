@@ -8,6 +8,7 @@ const LINKS = [
   { to: '/directory', label: 'Directory' },
   { to: '/function-calls', label: 'Function Calls' },
   { to: '/admins', label: 'Admins' },
+  { to: '/tests', label: 'Tests' },
 ];
 
 export function Shell({ email, children }: { email: string; children: React.ReactNode }) {

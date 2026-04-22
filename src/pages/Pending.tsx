@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { getAuthUser } from '@/lib/adminApi';
 import { KIND_ORDER, KINDS, type KindSpec } from '@/lib/kinds';
 
-type Row = Record<string, unknown> & { id: string; created_at?: string };
+type Row = Record<string, unknown> & { id: string; created_at?: string; submitted_by?: string | null };
 type Group = { spec: KindSpec; rows: Row[] };
 
 export function PendingPage() {
   const [groups, setGroups] = useState<Group[] | null>(null);
+  const [emailById, setEmailById] = useState<Record<string, string>>({});
 
   const load = async () => {
     const results = await Promise.all(KIND_ORDER.map(async (id) => {
@@ -19,10 +21,22 @@ export function PendingPage() {
         .limit(200);
       return { spec, rows: (data ?? []) as Row[] };
     }));
-    setGroups(results.filter((g) => g.rows.length > 0));
+    const nonEmpty = results.filter((g) => g.rows.length > 0);
+    setGroups(nonEmpty);
+
+    const ids = Array.from(new Set(
+      nonEmpty.flatMap((g) => g.rows.map((r) => r.submitted_by)).filter(Boolean),
+    )) as string[];
+    const next = { ...emailById };
+    await Promise.all(ids.map(async (id) => {
+      if (next[id]) return;
+      const u = await getAuthUser(id);
+      if (u?.email) next[id] = u.email;
+    }));
+    setEmailById(next);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
 
   const total = groups?.reduce((acc, g) => acc + g.rows.length, 0) ?? 0;
 
@@ -52,7 +66,13 @@ export function PendingPage() {
               </h2>
               <div className="space-y-3">
                 {rows.map((row) => (
-                  <PendingCard key={row.id} spec={spec} row={row} onResolved={load} />
+                  <PendingCard
+                    key={row.id}
+                    spec={spec}
+                    row={row}
+                    submitterEmail={row.submitted_by ? emailById[row.submitted_by] : null}
+                    onResolved={load}
+                  />
                 ))}
               </div>
             </section>
@@ -63,7 +83,11 @@ export function PendingPage() {
   );
 }
 
-function PendingCard({ spec, row, onResolved }: { spec: KindSpec; row: Row; onResolved: () => void }) {
+function PendingCard({
+  spec, row, submitterEmail, onResolved,
+}: {
+  spec: KindSpec; row: Row; submitterEmail: string | null | undefined; onResolved: () => void;
+}) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState(false);
@@ -89,6 +113,7 @@ function PendingCard({ spec, row, onResolved }: { spec: KindSpec; row: Row; onRe
 
   const title = String(row[spec.titleField] ?? '(untitled)');
   const secondary = spec.secondaryField ? row[spec.secondaryField] : null;
+  const submitterLabel = submitterEmail ?? (row.submitted_by ? `user ${row.submitted_by.slice(0, 8)}` : 'anonymous');
 
   return (
     <div className="card p-5">
@@ -96,6 +121,7 @@ function PendingCard({ spec, row, onResolved }: { spec: KindSpec; row: Row; onRe
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="pill">{spec.emoji} {spec.label}</span>
+            <span className="pill">by {submitterLabel}</span>
             {row.created_at && (
               <span className="text-xs" style={{ color: 'var(--color-muted)' }}>submitted {timeAgo(String(row.created_at))}</span>
             )}

@@ -12,6 +12,8 @@ import { DirectoryTablePage } from './pages/DirectoryTable';
 import { DirectoryEditPage } from './pages/DirectoryEdit';
 import { FunctionCallsPage } from './pages/FunctionCalls';
 import { AdminsPage } from './pages/Admins';
+import { TestsPage } from './pages/Tests';
+import { TestDetailPage } from './pages/TestDetail';
 
 function Protected({ element }: { element: React.ReactNode }) {
   return <RequireAdmin>{element}</RequireAdmin>;
@@ -33,6 +35,8 @@ export default function App() {
         <Route path="/directory/:table/:id" element={<Protected element={<DirectoryEditPage />} />} />
         <Route path="/function-calls" element={<Protected element={<FunctionCallsPage />} />} />
         <Route path="/admins" element={<Protected element={<AdminsPage />} />} />
+        <Route path="/tests" element={<Protected element={<TestsPage />} />} />
+        <Route path="/tests/:id" element={<Protected element={<TestDetailPage />} />} />
       </Routes>
     </BrowserRouter>
   );
