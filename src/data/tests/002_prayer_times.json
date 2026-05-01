@@ -9,7 +9,7 @@
     },
     {
       "role": "agent",
-      "content": "Jummah at Markazi today:\n- Khutbah starts: 1:00 PM\n- Jama'ah: 1:30 PM\n\nGet there early if you can — it fills up quick on Fridays."
+      "content": "Jummah at Jame Masjid today:\n- Khutbah starts: [time]\n- Jama'ah: [time]\n\nGet there early if you can — it fills up quick on Fridays."
     },
     {
       "role": "user",
@@ -17,7 +17,7 @@
     },
     {
       "role": "agent",
-      "content": "Asr at Markazi today:\n- Begins: 4:45 PM\n- Jama'ah: 5:15 PM\n\nAre you sticking with Markazi or checking other mosques as well?"
+      "content": "Asr at Jame Masjid today:\n- Begins: [time]\n- Jama'ah: [time]"
     },
     {
       "role": "user",
@@ -25,7 +25,7 @@
     },
     {
       "role": "agent",
-      "content": "Jamia Masjid Dewsbury for Asr:\n- Begins: 4:45 PM\n- Jama'ah: 5:10 PM\n\nSlightly earlier than Markazi."
+      "content": "Asr at Madni Jamia Masjid today:\n- Jama'ah: [time]"
     },
     {
       "role": "user",
@@ -33,7 +33,7 @@
     },
     {
       "role": "agent",
-      "content": "Maghrib at Jamia today:\n- Begins: 8:12 PM\n- Jama'ah: 8:17 PM\n\nDo you want Isha as well while you're planning?"
+      "content": "Maghrib at Madni Jamia Masjid today:\n- Jama'ah: [time]\n\nDo you want Isha as well while you're planning?"
     },
     {
       "role": "user",
@@ -41,7 +41,7 @@
     },
     {
       "role": "agent",
-      "content": "Isha at Jamia today:\n- Begins: 9:45 PM\n- Jama'ah: 10:00 PM\n\nYou're sorted for the day now 👍"
+      "content": "Isha at Madni Jamia Masjid today:\n- Jama'ah: [time]\n\nYou're sorted for the day now 👍"
     }
   ]
 }

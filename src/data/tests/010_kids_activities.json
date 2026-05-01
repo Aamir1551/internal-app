@@ -9,7 +9,7 @@
     },
     {
       "role": "agent",
-      "content": "Depends what they're into — there's actually a decent mix around here.\n\nOutdoor (if the weather's decent):\n- **Wilton Park** — big playground, ducks, loads of space to run around\n- **Oakwell Hall** — really popular, nice walks + open areas for kids\n\nIndoor (good all year round):\n- **Tag X** — laser tag, kids love it\n- **Stompers / Little Town of Play** — great for younger kids\n- **Tenpin (Dewsbury)** — bowling, easy win for a day out\n\nClubs & activities:\n- Football, cricket, martial arts — loads of local options\n- Madressa/Quran classes if that's relevant\n\nHow old are they?"
+      "content": "Depends what they're into — there's actually a decent mix around here.\n\nOutdoor (if the weather's decent):\n- **Wilton Park** — big playground, ducks, loads of space to run around\n- **Oakwell Hall** — really popular, nice walks + open areas for kids\n\nIndoor (good all year round):\n- **Tag X** — laser tag, kids love it\n- **Stompers / Little Town of Play** — great for younger kids\n- **Tenpin (Dewsbury)** — bowling, easy win for a day out\n\nClubs & activities:\n- Football, cricket, martial arts — loads of local options\n\nHow old are they?"
     },
     {
       "role": "user",
@@ -17,7 +17,7 @@
     },
     {
       "role": "agent",
-      "content": "Perfect age for it — loads of options around here.\n\nA few solid clubs:\n- **Batley Boys FC** — probably the main one locally, good setup\n- **Spen Valley AFC** — strong youth teams, bit wider catchment\n- **Hanging Heaton FC** — well respected, good coaching\n\nAt 8, he'd go into Under 9s. Most train midweek and play Sundays.\n\nIf I'm being honest — Batley Boys is usually the first one people try.\n\nDo you want their details?"
+      "content": "Perfect age for it — loads of options around here.\n\nA few solid clubs:\n- **Batley FC Juniors** — main youth club locally, Under 7s to Under 16s\n- **Hanging Heaton FC** — well respected grassroots club\n- **Gomersal & Cleckheaton FC** — strong youth teams, bit wider catchment\n\nAt 8, he'd go into Under 9s. Most train midweek and play Sundays.\n\nDo you want their details?"
     },
     {
       "role": "user",
@@ -25,7 +25,7 @@
     },
     {
       "role": "agent",
-      "content": "Batley Boys FC — best way to get in touch:\n- **Facebook:** search \"Batley Boys FC\" — they post trials + training\n- **Email:** batleyboysfc@gmail.com\n- **Training:** usually around Batley Sports & Tennis Centre\n\nBest thing — just message them on Facebook, it goes straight to the right coach.\n\nSquads fill up quick, so worth doing it this week."
+      "content": "**Batley FC Juniors** — best way to get in touch:\n- **Facebook:** search \"Batley FC Juniors\"\n- They post trials and training info there\n\nSquads fill up quick, so worth reaching out this week."
     },
     {
       "role": "user",
@@ -33,7 +33,7 @@
     },
     {
       "role": "agent",
-      "content": "Yeah, plenty you can fall back on when the weather's bad.\n\nActive options:\n- **Batley Sports & Tennis Centre** — indoor hall, plus proper tennis courts\n- **Tag X** — good if he's got energy to burn\n\nMore relaxed:\n- **Tenpin Dewsbury** — bowling, easy and reliable\n- **Soft play (Dewsbury / Heckmondwike)** — always a safe option\n\nSports centre's usually your best bet if he just wants to run around and play.\n\nYou looking for something regular or just weekends?"
+      "content": "Yeah, plenty you can fall back on when the weather's bad.\n\nActive options:\n- **Batley Sports & Tennis Centre** — indoor hall, proper facilities\n- **Tag X** — good if he's got energy to burn\n\nMore relaxed:\n- **Tenpin Dewsbury** — bowling, easy and reliable\n- **Soft play (Dewsbury / Heckmondwike)** — always a safe option\n\nSports centre's usually your best bet if he just wants to run around.\n\nYou looking for something regular or just weekends?"
     }
   ]
 }
