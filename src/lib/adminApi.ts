@@ -43,7 +43,7 @@ export async function getAuthUser(userId: string): Promise<AuthUser | null> {
   }
 }
 
-export async function getSystemPrompt(): Promise<{ prompt: string; source: 'db' | 'compiled' }> {
+export async function getSystemPrompt(): Promise<{ prompt: string }> {
   return call({ op: 'get_system_prompt' });
 }
 

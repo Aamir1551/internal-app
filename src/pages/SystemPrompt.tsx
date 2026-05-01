@@ -477,7 +477,6 @@ function downloadText(filename: string, content: string) {
 export function SystemPromptPage() {
   const [value, setValue] = useState('');
   const [saved, setSaved] = useState('');
-  const [source, setSource] = useState<'db' | 'compiled' | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -495,7 +494,7 @@ export function SystemPromptPage() {
 
   useEffect(() => {
     getSystemPrompt()
-      .then(({ prompt, source }) => { setValue(prompt); setSaved(prompt); setSource(source); })
+      .then(({ prompt }) => { setValue(prompt); setSaved(prompt); })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
 
@@ -513,7 +512,7 @@ export function SystemPromptPage() {
     setSaving(true); setError(null); setSuccessMsg(null);
     try {
       await saveSystemPrompt(value);
-      setSaved(value); setSource('db');
+      setSaved(value);
       setSuccessMsg('Saved — live for all users immediately.');
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -614,11 +613,6 @@ export function SystemPromptPage() {
         <h1 className="text-2xl font-semibold mb-1">System Prompt</h1>
         <p className="text-sm" style={{ color: 'var(--color-muted)' }}>
           Live system prompt sent to the AI on every chat request. Changes take effect immediately — no redeployment needed.
-          {source === 'compiled' && (
-            <span style={{ color: 'var(--color-warning)' }}>
-              {' '}Showing the compiled fallback — save to make it live from the DB.
-            </span>
-          )}
         </p>
       </div>
 
