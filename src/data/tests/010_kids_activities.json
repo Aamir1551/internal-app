@@ -1,7 +1,7 @@
 {
   "id": "010_kids_activities",
   "category": "activities_clubs",
-  "description": "Parent asks for activities and clubs for children, asks indoor/outdoor split, follows up on football clubs",
+  "description": "Parent asks for kids activities, follows up with age and interest, gets specific club details and indoor options",
   "messages": [
     {
       "role": "user",
@@ -9,7 +9,7 @@
     },
     {
       "role": "agent",
-      "content": "Batley's got a decent amount for kids depending on their age:\n\n**Outdoor:**\n- **Wilton Park** — big open green space, playground, duck pond. Free.\n- **Batley Sports & Tennis Centre** — outdoor courts, sports pitches\n- Various parks and recreation grounds around Batley Carr and Mount Pleasant\n\n**Indoor:**\n- **Bagshaw Museum** — free, good for curious kids, interactive exhibits\n- Local sports centres have swimming sessions\n- Soft play options in Dewsbury (short drive)\n\n**Clubs & activities:**\n- Football, cricket, and martial arts clubs across the area\n- After-school Quran/madressa classes if that's relevant\n\nHow old are they and what are they into?"
+      "content": "Depends what they're into — there's actually a decent mix around here.\n\nOutdoor (if the weather's decent):\n- **Wilton Park** — big playground, ducks, loads of space to run around\n- **Oakwell Hall** — really popular, nice walks + open areas for kids\n\nIndoor (good all year round):\n- **Tag X** — laser tag, kids love it\n- **Stompers / Little Town of Play** — great for younger kids\n- **Tenpin (Dewsbury)** — bowling, easy win for a day out\n\nClubs & activities:\n- Football, cricket, martial arts — loads of local options\n- Madressa/Quran classes if that's relevant\n\nHow old are they?"
     },
     {
       "role": "user",
@@ -17,7 +17,7 @@
     },
     {
       "role": "agent",
-      "content": "Good age for grassroots football. A few clubs in the area:\n\n- **Batley Boys FC** — well-established local youth football club, takes players from age 6+\n- **Spen Valley AFC** — covers the Heckmondwike/Cleckheaton area, strong youth setup\n- **Hanging Heaton FC** — respected local club with junior teams\n- Various school leagues and Sunday morning teams that operate around Batley\n\nMost of these train midweek and play on Sundays. For an 8-year-old, the Under 9s teams are where he'd slot in — contact them now as squads fill up before the season starts.\n\nWant contact details for any of them?"
+      "content": "Perfect age for it — loads of options around here.\n\nA few solid clubs:\n- **Batley Boys FC** — probably the main one locally, good setup\n- **Spen Valley AFC** — strong youth teams, bit wider catchment\n- **Hanging Heaton FC** — well respected, good coaching\n\nAt 8, he'd go into Under 9s. Most train midweek and play Sundays.\n\nIf I'm being honest — Batley Boys is usually the first one people try.\n\nDo you want their details?"
     },
     {
       "role": "user",
@@ -25,7 +25,7 @@
     },
     {
       "role": "agent",
-      "content": "**Batley Boys FC** — here's what I found:\n\n- **Contact:** batleyboysfc@gmail.com\n- **Facebook:** facebook.com/BatleyBoysFC — they post training schedules and trial dates here\n- **Training:** Sunday mornings, usually at Batley Sports & Tennis Centre pitches\n- **Under 9s manager:** Listed on their Facebook — best to send a message there for youth team queries as it goes straight to the right person\n\nThey're a friendly club — drop them a message this week and you should hear back quickly."
+      "content": "Batley Boys FC — best way to get in touch:\n- **Facebook:** search \"Batley Boys FC\" — they post trials + training\n- **Email:** batleyboysfc@gmail.com\n- **Training:** usually around Batley Sports & Tennis Centre\n\nBest thing — just message them on Facebook, it goes straight to the right coach.\n\nSquads fill up quick, so worth doing it this week."
     },
     {
       "role": "user",
@@ -33,7 +33,7 @@
     },
     {
       "role": "agent",
-      "content": "For rainy days:\n\n- **Batley Sports & Tennis Centre** — indoor sports hall, badminton, basketball, football sessions. Check their timetable for kids' open sessions.\n- **Dewsbury Rams community sessions** — the rugby league club sometimes runs indoor youth activity days\n- **Swimming** — Dewsbury Sports Centre has a pool with family sessions\n- **Soft play** — there are a couple of options in Dewsbury and Heckmondwike, about a 10-minute drive\n- **Bowling** — Dewsbury Bowl is nearby if you want something more casual\n\nSports centre is probably your go-to for an active rainy day at 8 years old. Worth picking up their activity schedule."
+      "content": "Yeah, plenty you can fall back on when the weather's bad.\n\nActive options:\n- **Batley Sports & Tennis Centre** — indoor hall, plus proper tennis courts\n- **Tag X** — good if he's got energy to burn\n\nMore relaxed:\n- **Tenpin Dewsbury** — bowling, easy and reliable\n- **Soft play (Dewsbury / Heckmondwike)** — always a safe option\n\nSports centre's usually your best bet if he just wants to run around and play.\n\nYou looking for something regular or just weekends?"
     }
   ]
 }

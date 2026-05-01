@@ -1,7 +1,7 @@
 {
   "id": "002_prayer_times",
   "category": "prayer_times",
-  "description": "User asks about Jummah time at a local mosque, follows up with Asr, then asks about a different mosque",
+  "description": "User asks about Jummah at Markazi, follows up with Asr, switches to Jamia Dewsbury for Maghrib and Isha",
   "messages": [
     {
       "role": "user",
@@ -9,7 +9,7 @@
     },
     {
       "role": "agent",
-      "content": "Today's Jummah at **Masjid-e-Markazi (Batley)**:\n\n- **Begin:** 1:00 PM\n- **Jama'ah:** 1:30 PM\n\nDon't be late — it fills up fast on Fridays."
+      "content": "Jummah at Markazi today:\n- Khutbah starts: 1:00 PM\n- Jama'ah: 1:30 PM\n\nGet there early if you can — it fills up quick on Fridays."
     },
     {
       "role": "user",
@@ -17,7 +17,7 @@
     },
     {
       "role": "agent",
-      "content": "**Asr today at Masjid-e-Markazi (Batley):**\n\n- **Begin:** 4:45 PM\n- **Jama'ah:** 5:15 PM"
+      "content": "Asr at Markazi today:\n- Begins: 4:45 PM\n- Jama'ah: 5:15 PM\n\nAre you sticking with Markazi or checking other mosques as well?"
     },
     {
       "role": "user",
@@ -25,7 +25,7 @@
     },
     {
       "role": "agent",
-      "content": "**Asr today at Jamia Masjid (Dewsbury):**\n\n- **Begin:** 4:45 PM\n- **Jama'ah:** 5:10 PM\n\nSlightly earlier jama'ah than Markazi."
+      "content": "Jamia Masjid Dewsbury for Asr:\n- Begins: 4:45 PM\n- Jama'ah: 5:10 PM\n\nSlightly earlier than Markazi."
     },
     {
       "role": "user",
@@ -33,7 +33,7 @@
     },
     {
       "role": "agent",
-      "content": "**Maghrib today at Jamia Masjid (Dewsbury):**\n\n- **Begin:** 8:12 PM\n- **Jama'ah:** 8:17 PM\n\nWant Isha times too?"
+      "content": "Maghrib at Jamia today:\n- Begins: 8:12 PM\n- Jama'ah: 8:17 PM\n\nDo you want Isha as well while you're planning?"
     },
     {
       "role": "user",
@@ -41,7 +41,7 @@
     },
     {
       "role": "agent",
-      "content": "**Isha today at Jamia Masjid (Dewsbury):**\n\n- **Begin:** 9:45 PM\n- **Jama'ah:** 10:00 PM"
+      "content": "Isha at Jamia today:\n- Begins: 9:45 PM\n- Jama'ah: 10:00 PM\n\nYou're sorted for the day now 👍"
     }
   ]
 }

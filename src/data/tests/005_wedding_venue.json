@@ -1,7 +1,7 @@
 {
   "id": "005_wedding_venue",
   "category": "wedding_halls",
-  "description": "User planning a wedding looks for a halal venue with capacity for 300+ guests",
+  "description": "User planning a large halal wedding asks for venues, drills into facilities, asks about an unusual venue, and queries pricing",
   "messages": [
     {
       "role": "user",
@@ -9,15 +9,15 @@
     },
     {
       "role": "agent",
-      "content": "For 300 guests with halal catering, here are your best options:\n\n**Dewsbury:**\n- **Al-Hikmah Centre** — massive venue, capacity up to 1,200 across two floors, halal catering, proper facilities. One of the biggest in the area.\n- **PKWA (Pakistan Kashmiri Welfare Association)** — well-established community venue, halal, good for traditional weddings\n\n**Batley:**\n- **Batley Cricket Club** — more of a function room setup, halal catering available, good if you want something a bit different\n- **Healey Community Centre** — smaller but does halal events, worth checking capacity for 300\n\nFor 300 people, Al-Hikmah is probably the safest bet — they do weddings regularly and the capacity is there. Want their contact details?"
+      "content": "Alright, for 300 guests with halal catering — you've got some solid options around here.\n\nDewsbury (more traditional banqueting venues):\n- **The Grand Banqueting Suite** — proper wedding setup, designed for big Asian weddings\n- **The Courts** — modern, good layout for large events\n- **Victoria Suite / Town Hall** — more classic venues, depends on the vibe you want\n\nBatley:\n- **Al-Hikmah Centre** — big venue, very popular for weddings, handles large numbers easily\n- **PKWA** — more community feel, usually more budget-friendly\n\nIf I'm being honest — for 300 guests, Al-Hikmah or The Grand are your safest bets. They do this all the time so you won't run into issues.\n\nDo you want something more traditional, or a bit different?"
     },
     {
       "role": "user",
-      "content": "Yes please, and what facilities does Al-Hikmah have?"
+      "content": "What facilities does Al-Hikmah have?"
     },
     {
       "role": "agent",
-      "content": "**Al-Hikmah Centre, Dewsbury:**\n\n- **Capacity:** Up to 1,200 (across two floors, so you can book one or both)\n- **Halal catering:** Yes\n- **Facilities:** Main hall, kitchen, car park, prayer facilities, disabled access\n- **Phone:** Listed on their website — I'd recommend ringing direct for wedding bookings as availability goes fast\n- **Website:** al-hikmah.ac.uk\n\nThey're very experienced with weddings and Asian events specifically. Definitely worth visiting in person before booking."
+      "content": "Al-Hikmah's well set up for weddings — they've done loads over the years.\n\n- **Capacity:** Up to 1,000+ depending on layout\n- **Main hall:** Large open space, flexible for stage + seating\n- **Catering:** Halal-friendly\n- **Parking:** On-site, which helps a lot with big events\n- **Prayer facilities:** Available\n- **Access:** Disabled-friendly\n\nIt's not the most \"luxury\" looking venue, but it's reliable and handles big weddings properly.\n\nDefinitely worth going to see it in person — layout matters more than photos for places like that."
     },
     {
       "role": "user",
@@ -25,7 +25,7 @@
     },
     {
       "role": "agent",
-      "content": "Yes — **Batley Bulldogs Stadium (Fox's Biscuits Stadium)** does function hire including weddings. It's a bit of a different vibe — sports venue rather than a traditional function hall — but some people love the unique setting.\n\nFrom what I can find: the main function suite holds up to **300 guests**, and they work with halal caterers for events. Contact is through the club's events team — **01924 472 873** or the contact form on their website at batleybulldogs.co.uk.\n\nWorth a call if you want something a bit more memorable than a standard hall."
+      "content": "Yeah, Batley Bulldogs do hire it out for weddings.\n\nIt's a bit of a different vibe though — more of a function suite at a stadium rather than a traditional wedding hall.\n\n- Capacity is around 300, so it fits your numbers\n- They can arrange halal catering through partners\n- Good if you want something a bit more unique\n\nIf I'm being honest — it's more for people who want something different. For a classic Asian wedding, most people still go for places like The Grand or Al-Hikmah."
     },
     {
       "role": "user",
@@ -33,7 +33,7 @@
     },
     {
       "role": "agent",
-      "content": "None of them publicly list wedding prices — which is pretty standard, it all depends on guest count, catering, day of week, and time of year. From what I can find online, for a 300-person wedding in this area you're roughly looking at:\n\n- **Hall hire alone:** £800–£2,000 depending on the venue and day\n- **Catering on top:** £25–£50 per head is typical for a sit-down Asian wedding meal\n- So all-in for 300 guests: **£8,000–£17,000** is a realistic range, before flowers, decorations, etc.\n\nAl-Hikmah will be towards the higher end given the size and facilities. PKWA tends to be more community-rate pricing. Ring both with your date and headcount — they'll quote you properly."
+      "content": "They don't usually list prices — it all depends on your date and setup.\n\nBut just to give you a rough idea for 300 guests:\n- **Hall hire:** £800–£2,000\n- **Catering:** £25–£50 per head\n- **All-in:** you're roughly looking at £8k–£17k\n\nAl-Hikmah and The Grand will be towards the higher end. PKWA or community venues can be a bit cheaper.\n\nBest thing to do — ring them with your date and numbers, they'll quote you properly."
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "id": "001_food_recommendation",
   "category": "food",
-  "description": "User asks for a food recommendation, drills into a specific place, asks about halal status and delivery",
+  "description": "User asks for a food recommendation, drills into a specific place, asks about halal status, delivery, and budget options",
   "messages": [
     {
       "role": "user",
@@ -9,7 +9,7 @@
     },
     {
       "role": "agent",
-      "content": "Depends what you're in the mood for! A few solid options:\n\n- **Bar B Que Base** — if you want wings, they do a single wing for 75p. Unbeatable for snacking.\n- **Chickano's** — proper portions, their 3-pack wings is £4.39 and honestly much tastier.\n- **Ashpazi's** — if you want a proper sit-down meal, their Jericho Platter (£35) is lamb chops, koobideh, chicken tikka — the works. Great for sharing.\n\nWhat are you feeling — quick bite or a proper meal?"
+      "content": "Depends what you're after — Batley's got a bit of everything.\n\nIf you want a proper sit-down:\n- **Saphire** — nice vibe, good for couples\n- **Toros** — proper steak place, always busy\n\nIf you want something more casual:\n- **Frankies** (aka Franksters) — diner style, big portions\n- **Salt & Crust** — loads of choice, good for families\n- **Ashpazi's** — Persian/Afghan style, good for families\n\nIf it's just a quick bite:\n- **Chickano's** — solid chicken, people rate it\n- **BBQ Base** — cheap wings, can't really go wrong\n\nWhat are you feeling — quick food or somewhere to sit in?"
     },
     {
       "role": "user",
@@ -17,7 +17,7 @@
     },
     {
       "role": "agent",
-      "content": "**Ashpazi's** is one of the better Persian/Afghan spots in the area. The Jericho Platter at £35 feeds about 4 people and comes with a proper mix of grilled meats. They've also got individual mains if you're eating alone.\n\nThey're on the Batley side — worth the trip if you've never been. Good for family dinners or when you want something a bit more substantial than a takeaway box."
+      "content": "Ashpazi's is a good shout if you want something a bit different.\n\nIt's more Persian/Afghan style — lots of grilled meats, rice, proper flavour. The Jericho Platter is what most people go for — big mix of everything and easily feeds a few people.\n\nNot fancy, but the food's always on point. Good for a proper meal rather than just grabbing something quick."
     },
     {
       "role": "user",
@@ -25,7 +25,7 @@
     },
     {
       "role": "agent",
-      "content": "Yes, Ashpazi's is listed as halal in my records.\n\n> Just to be clear though — always double-check directly with the restaurant if it matters to you, especially for religious requirements. What I have on record may not always be fully up to date."
+      "content": "Yeah, it's halal from what I know.\n\nBut if it matters to you, just double-check with them directly — better to be 100% sure."
     },
     {
       "role": "user",
@@ -33,7 +33,7 @@
     },
     {
       "role": "agent",
-      "content": "Yes — Ashpazi's is on **Just Eat**, so you can order from there. They also have their own number if you'd rather call direct: worth ringing for larger orders as they sometimes do better deals over the phone than the app."
+      "content": "Yeah, they're on Just Eat.\n\nYou can call them direct as well — sometimes you get better deals that way, especially for bigger orders."
     },
     {
       "role": "user",
@@ -41,7 +41,7 @@
     },
     {
       "role": "agent",
-      "content": "Loads of options under £5 in Batley. A few things that'll fill you up:\n\n- **Bar B Que Base** — wings from 75p each, so you can mix and match\n- **Chickano's** — 3-pack wings for £4.39\n- Most local chicken shops do meal deals in that range too\n\nAnything specific you fancy — burgers, wraps, pizza? I can narrow it down."
+      "content": "Yeah, you can still eat for under a fiver if you know where to go.\n\n- **Kluckaroo's** — probably your best bet, loads of cheap options\n- **BBQ Base** — wings from 75p, just build your own\n- **Chickano's** — 3 wings for £4.39, decent for the price\n\nMost chicken spots will sort you out, but those are the ones people actually go back to.\n\nYou after something proper filling or just a quick snack?"
     }
   ]
 }
