@@ -1,42 +1,39 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSystemPrompt, saveSystemPrompt } from '@/lib/adminApi';
 
 export function SystemPromptPage() {
   const [value, setValue] = useState('');
   const [saved, setSaved] = useState('');
+  const [source, setSource] = useState<'db' | 'compiled' | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase
-      .from('system_config')
-      .select('value')
-      .eq('key', 'system_prompt')
-      .maybeSingle()
-      .then(({ data, error }) => {
-        if (error) setError(error.message);
-        const v = data?.value ?? '';
-        setValue(v);
-        setSaved(v);
-        setLoading(false);
-      });
+    getSystemPrompt()
+      .then(({ prompt, source }) => {
+        setValue(prompt);
+        setSaved(prompt);
+        setSource(source);
+      })
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
   }, []);
 
   const save = async () => {
     setSaving(true);
     setError(null);
     setSuccessMsg(null);
-    const { error } = await supabase
-      .from('system_config')
-      .upsert({ key: 'system_prompt', value, updated_at: new Date().toISOString() });
-    setSaving(false);
-    if (error) {
-      setError(error.message);
-    } else {
+    try {
+      await saveSystemPrompt(value);
       setSaved(value);
+      setSource('db');
       setSuccessMsg('Saved — live for all users immediately.');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -48,7 +45,11 @@ export function SystemPromptPage() {
         <h1 className="text-2xl font-semibold mb-1">System Prompt</h1>
         <p className="text-sm" style={{ color: 'var(--color-muted)' }}>
           Live system prompt sent to the AI on every chat request. Changes take effect immediately — no redeployment needed.
-          {loading ? '' : !saved && ' No saved prompt yet — the compiled fallback is in use.'}
+          {source === 'compiled' && (
+            <span style={{ color: 'var(--color-warning, #facc15)' }}>
+              {' '}Showing the compiled fallback — save to make it live from the DB.
+            </span>
+          )}
         </p>
       </div>
 
