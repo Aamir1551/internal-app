@@ -210,10 +210,11 @@ function TurnComparison({ turn, streaming }: { turn: TurnResult; streaming: bool
 // ── Test card ─────────────────────────────────────────────────────────────────
 
 function TestCard({
-  test, run, onDelete,
+  test, run, onRun, onDelete,
 }: {
   test: TestCase | TestCaseDb;
   run?: TestRun;
+  onRun?: () => void;
   onDelete?: () => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -250,6 +251,16 @@ function TestCard({
           <span className="text-xs" style={{ color: 'var(--color-muted)' }}>
             {open ? '▲ hide' : '▼ show'}
           </span>
+          {onRun && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onRun(); }}
+              className="btn"
+              disabled={run?.status === 'running'}
+              style={{ padding: '2px 8px', fontSize: '12px' }}
+            >
+              {run?.status === 'running' ? '…' : '▶ Run'}
+            </button>
+          )}
           {isDb && onDelete && (
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(); }}
@@ -568,6 +579,32 @@ export function SystemPromptPage() {
     setRunningAll(false);
   };
 
+  const handleRunOne = async (test: TestCase | TestCaseDb) => {
+    const token = userTokenRef.current;
+    if (!token) { alert('No user session — please reload.'); return; }
+    const abort = new AbortController();
+    abortRef.current = abort;
+    try {
+      await runTest(
+        test,
+        token,
+        (run) => setRuns((prev) => ({ ...prev, [test.id]: run })),
+        abort.signal,
+      );
+    } catch (e) {
+      if ((e as Error).name !== 'AbortError') {
+        setRuns((prev) => ({
+          ...prev,
+          [test.id]: {
+            status: 'error', currentTurn: -1,
+            turns: prev[test.id]?.turns ?? [],
+            error: e instanceof Error ? e.message : String(e),
+          },
+        }));
+      }
+    }
+  };
+
   const isDirty = value !== saved;
   const allTests: (TestCase | TestCaseDb)[] = [...ALL_TESTS, ...dbTests];
 
@@ -622,18 +659,30 @@ export function SystemPromptPage() {
                 >
                   {showCreate ? '✕ Cancel' : '+ New test'}
                 </button>
-                {Object.values(runs).some((r) => r.status === 'done' || r.status === 'error') && !runningAll && (
-                  <button
-                    className="btn"
-                    onClick={() => {
-                      const report = generateReport(value, allTests, runs);
-                      const date = new Date().toISOString().slice(0, 10);
-                      downloadText(`batleygpt-eval-${date}.md`, report);
-                    }}
-                  >
-                    ↓ Download Report
-                  </button>
-                )}
+                {(() => {
+                  const hasResults = Object.values(runs).some((r) => r.status === 'done' || r.status === 'error');
+                  const stillRunning = runningAll || Object.values(runs).some((r) => r.status === 'running');
+                  return (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '3px' }}>
+                      <button
+                        className="btn"
+                        disabled={!hasResults || stillRunning}
+                        onClick={() => {
+                          const report = generateReport(value, allTests, runs);
+                          const date = new Date().toISOString().slice(0, 10);
+                          downloadText(`batleygpt-eval-${date}.md`, report);
+                        }}
+                      >
+                        ↓ Download Report
+                      </button>
+                      {(!hasResults || stillRunning) && (
+                        <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>
+                          {stillRunning ? 'Wait for runs to finish' : 'Run tests first'}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
                 {runningAll ? (
                   <button className="btn btn-danger" onClick={handleStop}>
                     ■ Stop
@@ -689,6 +738,7 @@ export function SystemPromptPage() {
                   key={t.id}
                   test={t}
                   run={runs[t.id]}
+                  onRun={() => handleRunOne(t)}
                   onDelete={'created_at' in t ? () => handleDeleteTest(t.id) : undefined}
                 />
               ))}
