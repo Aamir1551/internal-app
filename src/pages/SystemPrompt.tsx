@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { supabase } from '@/lib/supabase';
 import {
   getSystemPrompt,
   saveSystemPrompt,
@@ -12,20 +13,123 @@ import {
 } from '@/lib/adminApi';
 import { ALL_TESTS, categoryPill, type TestCase } from './Tests';
 
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
 const CATEGORIES = [
-  'food',
-  'prayer_times',
-  'wedding_halls',
-  'activities_clubs',
-  'tradespeople',
-  'schools',
-  'events',
-  'jobs',
-  'interesting_facts',
-  'general',
+  'food', 'prayer_times', 'wedding_halls', 'activities_clubs',
+  'tradespeople', 'schools', 'events', 'jobs', 'interesting_facts', 'general',
 ];
 
-// ── Shared conversation renderer ──────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+type TurnResult = {
+  userMessage: string;
+  goldResponse: string;
+  agentResponse: string;
+};
+
+type TestRun = {
+  status: 'running' | 'done' | 'error';
+  currentTurn: number;
+  turns: TurnResult[];
+  error?: string;
+};
+
+// ── Chat streaming ────────────────────────────────────────────────────────────
+
+async function streamChatTurn(
+  history: { role: 'user' | 'assistant'; content: string }[],
+  onChunk: (text: string) => void,
+  userToken: string,
+  signal: AbortSignal,
+): Promise<string> {
+  const res = await fetch(CHAT_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${ANON_KEY}`,
+      'x-user-token': userToken,
+    },
+    body: JSON.stringify({ history }),
+    signal,
+  });
+
+  if (!res.ok || !res.body) throw new Error(`Chat ${res.status}`);
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let fullText = '';
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        try {
+          const event = JSON.parse(trimmed);
+          if (event.type === 'text') { fullText += event.data; onChunk(event.data); }
+          if (event.type === 'error') throw new Error(event.message);
+        } catch (e) {
+          if (e instanceof SyntaxError) continue;
+          throw e;
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  return fullText;
+}
+
+async function runTest(
+  test: TestCase | TestCaseDb,
+  userToken: string,
+  onUpdate: (run: TestRun) => void,
+  signal: AbortSignal,
+): Promise<void> {
+  const msgs = test.messages as TestMessage[];
+  const pairs: { user: string; gold: string }[] = [];
+  for (let i = 0; i + 1 < msgs.length; i++) {
+    if (msgs[i].role === 'user' && (msgs[i + 1].role === 'agent' || msgs[i + 1].role === 'assistant')) {
+      pairs.push({ user: msgs[i].content, gold: msgs[i + 1].content });
+      i++;
+    }
+  }
+
+  const turns: TurnResult[] = pairs.map((p) => ({ userMessage: p.user, goldResponse: p.gold, agentResponse: '' }));
+  onUpdate({ status: 'running', currentTurn: 0, turns: [...turns] });
+
+  const history: { role: 'user' | 'assistant'; content: string }[] = [];
+
+  for (let i = 0; i < pairs.length; i++) {
+    if (signal.aborted) break;
+    history.push({ role: 'user', content: pairs[i].user });
+    onUpdate({ status: 'running', currentTurn: i, turns: turns.map((t, ti) => ti === i ? { ...t, agentResponse: '' } : t) });
+
+    await streamChatTurn(history, (chunk) => {
+      turns[i] = { ...turns[i], agentResponse: turns[i].agentResponse + chunk };
+      onUpdate({ status: 'running', currentTurn: i, turns: [...turns] });
+    }, userToken, signal);
+
+    history.push({ role: 'assistant', content: turns[i].agentResponse });
+  }
+
+  onUpdate({
+    status: signal.aborted ? 'error' : 'done',
+    currentTurn: -1,
+    turns: [...turns],
+    error: signal.aborted ? 'Stopped' : undefined,
+  });
+}
+
+// ── Conversation thread (gold standard view) ──────────────────────────────────
 
 function ConversationThread({ messages }: { messages: TestMessage[] }) {
   return (
@@ -46,17 +150,86 @@ function ConversationThread({ messages }: { messages: TestMessage[] }) {
   );
 }
 
-// ── Single collapsible test card ──────────────────────────────────────────────
+// ── Turn comparison (side-by-side) ────────────────────────────────────────────
+
+function TurnComparison({ turn, streaming }: { turn: TurnResult; streaming: boolean }) {
+  return (
+    <div>
+      {/* User message */}
+      <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'flex-end' }}>
+        <div className="bubble-user" style={{ maxWidth: '70%' }}>{turn.userMessage}</div>
+      </div>
+
+      {/* Side-by-side responses */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderTop: '1px solid var(--color-border)' }}>
+        {/* Gold */}
+        <div style={{ padding: '12px 16px', borderRight: '1px solid var(--color-border)' }}>
+          <div className="label mb-2" style={{ color: 'var(--color-warning)' }}>Gold Standard</div>
+          <div
+            className="prose-chat"
+            style={{
+              fontSize: '0.875rem', lineHeight: '1.55',
+              padding: '10px 12px', borderRadius: '8px',
+              background: 'rgba(245,158,11,0.05)',
+              border: '1px solid rgba(245,158,11,0.2)',
+            }}
+          >
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{turn.goldResponse}</ReactMarkdown>
+          </div>
+        </div>
+
+        {/* Live Agent */}
+        <div style={{ padding: '12px 16px' }}>
+          <div className="label mb-2" style={{ color: streaming ? 'var(--color-accent)' : 'var(--color-muted)' }}>
+            Live Agent{streaming && <span style={{ marginLeft: '6px', animation: 'pulse 1s infinite' }}>●</span>}
+          </div>
+          <div
+            className="prose-chat"
+            style={{
+              fontSize: '0.875rem', lineHeight: '1.55',
+              padding: '10px 12px', borderRadius: '8px',
+              background: turn.agentResponse ? 'rgba(59,130,246,0.05)' : 'rgba(0,0,0,0.2)',
+              border: `1px solid ${turn.agentResponse ? 'rgba(59,130,246,0.2)' : 'var(--color-border)'}`,
+              minHeight: '48px',
+              color: turn.agentResponse ? 'var(--color-foreground)' : 'var(--color-muted)',
+            }}
+          >
+            {turn.agentResponse
+              ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{turn.agentResponse}</ReactMarkdown>
+              : streaming
+                ? <span style={{ fontStyle: 'italic' }}>Generating…</span>
+                : <span style={{ fontStyle: 'italic' }}>Not run</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Test card ─────────────────────────────────────────────────────────────────
 
 function TestCard({
-  test,
-  onDelete,
+  test, run, onDelete,
 }: {
   test: TestCase | TestCaseDb;
+  run?: TestRun;
   onDelete?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const isDb = 'created_at' in test;
+
+  useEffect(() => {
+    if (run) setOpen(true);
+  }, [!!run]);
+
+  const statusBadge = run
+    ? run.status === 'running'
+      ? <span className="pill pill-warning" style={{ fontSize: '11px' }}>Running…</span>
+      : run.status === 'done'
+        ? <span className="pill pill-success" style={{ fontSize: '11px' }}>Done</span>
+        : <span className="pill pill-danger" style={{ fontSize: '11px' }}>{run.error ?? 'Error'}</span>
+    : null;
 
   return (
     <div className="card overflow-hidden">
@@ -71,6 +244,7 @@ function TestCard({
           </span>
           {categoryPill(test.category)}
           <span className="text-sm truncate">{test.description}</span>
+          {statusBadge}
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <span className="text-xs" style={{ color: 'var(--color-muted)' }}>
@@ -90,7 +264,22 @@ function TestCard({
 
       {open && (
         <div style={{ borderTop: '1px solid var(--color-border)' }}>
-          <ConversationThread messages={test.messages as TestMessage[]} />
+          {run ? (
+            run.turns.length === 0 ? (
+              <p style={{ padding: '16px', color: 'var(--color-muted)', fontSize: '0.875rem' }}>Starting…</p>
+            ) : (
+              run.turns.map((turn, i) => (
+                <div key={i} style={{ borderTop: i > 0 ? '1px solid var(--color-border)' : undefined }}>
+                  <TurnComparison
+                    turn={turn}
+                    streaming={run.status === 'running' && run.currentTurn === i}
+                  />
+                </div>
+              ))
+            )
+          ) : (
+            <ConversationThread messages={test.messages as TestMessage[]} />
+          )}
         </div>
       )}
     </div>
@@ -100,8 +289,7 @@ function TestCard({
 // ── Create test form ──────────────────────────────────────────────────────────
 
 function CreateTestForm({
-  onSave,
-  onCancel,
+  onSave, onCancel,
 }: {
   onSave: (test: Pick<TestCaseDb, 'id' | 'category' | 'description' | 'messages'>) => Promise<void>;
   onCancel: () => void;
@@ -123,22 +311,17 @@ function CreateTestForm({
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
   };
 
-  const removeMessage = (i: number) => {
-    setMessages((prev) => prev.filter((_, idx) => idx !== i));
-  };
+  const removeMessage = (i: number) => setMessages((prev) => prev.filter((_, idx) => idx !== i));
 
-  const updateMessage = (i: number, field: 'role' | 'content', val: string) => {
-    setMessages((prev) => prev.map((m, idx) => idx === i ? { ...m, [field]: val } : m));
-  };
+  const updateMessage = (i: number, field: 'role' | 'content', val: string) =>
+    setMessages((prev) => prev.map((m, idx) => (idx === i ? { ...m, [field]: val } : m)));
 
   const handleSave = async () => {
     if (!description.trim()) { setError('Description is required.'); return; }
     const validMessages = messages.filter((m) => m.content.trim());
     if (validMessages.length < 2) { setError('Add at least 2 messages.'); return; }
-
     const id = `${Date.now()}_${category}`;
-    setSaving(true);
-    setError(null);
+    setSaving(true); setError(null);
     try {
       await onSave({ id, category, description: description.trim(), messages: validMessages });
     } catch (e) {
@@ -150,19 +333,11 @@ function CreateTestForm({
   return (
     <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <h3 className="text-base font-semibold">New Test</h3>
-
-      {/* Category + Description */}
       <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: '12px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <label className="text-xs font-medium" style={{ color: 'var(--color-muted)' }}>Category</label>
-          <select
-            className="input text-sm"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>
-            ))}
+          <select className="input text-sm" value={category} onChange={(e) => setCategory(e.target.value)}>
+            {CATEGORIES.map((c) => <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>)}
           </select>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -175,8 +350,6 @@ function CreateTestForm({
           />
         </div>
       </div>
-
-      {/* Messages */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <label className="text-xs font-medium" style={{ color: 'var(--color-muted)' }}>Messages</label>
         {messages.map((msg, i) => (
@@ -202,20 +375,14 @@ function CreateTestForm({
                 onClick={() => removeMessage(i)}
                 className="btn shrink-0 text-xs"
                 style={{ color: 'var(--color-danger)', marginTop: '2px' }}
-              >
-                ✕
-              </button>
+              >✕</button>
             )}
           </div>
         ))}
         <div ref={bottomRef} />
-        <button className="btn text-sm" onClick={addTurn} style={{ alignSelf: 'flex-start' }}>
-          + Add turn
-        </button>
+        <button className="btn text-sm" onClick={addTurn} style={{ alignSelf: 'flex-start' }}>+ Add turn</button>
       </div>
-
       {error && <p className="text-sm" style={{ color: 'var(--color-danger)' }}>{error}</p>}
-
       <div style={{ display: 'flex', gap: '8px' }}>
         <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save test'}
@@ -241,6 +408,12 @@ export function SystemPromptPage() {
   const [testsLoading, setTestsLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
 
+  const [runs, setRuns] = useState<Record<string, TestRun>>({});
+  const [runningAll, setRunningAll] = useState(false);
+  const [runProgress, setRunProgress] = useState<{ done: number; total: number } | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const userTokenRef = useRef<string | null>(null);
+
   useEffect(() => {
     getSystemPrompt()
       .then(({ prompt, source }) => { setValue(prompt); setSaved(prompt); setSource(source); })
@@ -251,6 +424,10 @@ export function SystemPromptPage() {
       .then(setDbTests)
       .catch(() => {})
       .finally(() => setTestsLoading(false));
+
+    supabase.auth.getSession().then(({ data }) => {
+      userTokenRef.current = data.session?.access_token ?? null;
+    });
   }, []);
 
   const save = async () => {
@@ -266,9 +443,7 @@ export function SystemPromptPage() {
     }
   };
 
-  const handleCreateTest = async (
-    test: Pick<TestCaseDb, 'id' | 'category' | 'description' | 'messages'>,
-  ) => {
+  const handleCreateTest = async (test: Pick<TestCaseDb, 'id' | 'category' | 'description' | 'messages'>) => {
     await createDbTest(test);
     setDbTests((prev) => [...prev, { ...test, created_at: new Date().toISOString() }]);
     setShowCreate(false);
@@ -279,7 +454,54 @@ export function SystemPromptPage() {
     setDbTests((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const handleRunAll = async () => {
+    const token = userTokenRef.current;
+    if (!token) { alert('No user session — please reload.'); return; }
+
+    const allTests: (TestCase | TestCaseDb)[] = [...ALL_TESTS, ...dbTests];
+    const abort = new AbortController();
+    abortRef.current = abort;
+
+    setRunningAll(true);
+    setRuns({});
+    setRunProgress({ done: 0, total: allTests.length });
+
+    for (let i = 0; i < allTests.length; i++) {
+      if (abort.signal.aborted) break;
+      const test = allTests[i];
+      try {
+        await runTest(
+          test,
+          token,
+          (run) => setRuns((prev) => ({ ...prev, [test.id]: run })),
+          abort.signal,
+        );
+      } catch (e) {
+        if ((e as Error).name === 'AbortError') break;
+        setRuns((prev) => ({
+          ...prev,
+          [test.id]: {
+            status: 'error',
+            currentTurn: -1,
+            turns: prev[test.id]?.turns ?? [],
+            error: e instanceof Error ? e.message : String(e),
+          },
+        }));
+      }
+      setRunProgress({ done: i + 1, total: allTests.length });
+    }
+
+    setRunningAll(false);
+    abortRef.current = null;
+  };
+
+  const handleStop = () => {
+    abortRef.current?.abort();
+    setRunningAll(false);
+  };
+
   const isDirty = value !== saved;
+  const allTests: (TestCase | TestCaseDb)[] = [...ALL_TESTS, ...dbTests];
 
   return (
     <>
@@ -288,7 +510,7 @@ export function SystemPromptPage() {
         <p className="text-sm" style={{ color: 'var(--color-muted)' }}>
           Live system prompt sent to the AI on every chat request. Changes take effect immediately — no redeployment needed.
           {source === 'compiled' && (
-            <span style={{ color: 'var(--color-warning, #facc15)' }}>
+            <span style={{ color: 'var(--color-warning)' }}>
               {' '}Showing the compiled fallback — save to make it live from the DB.
             </span>
           )}
@@ -311,52 +533,89 @@ export function SystemPromptPage() {
               {saving ? 'Saving…' : 'Save'}
             </button>
             {isDirty && <span className="text-sm" style={{ color: 'var(--color-muted)' }}>Unsaved changes</span>}
-            {successMsg && <span className="text-sm" style={{ color: 'var(--color-success, #4ade80)' }}>{successMsg}</span>}
+            {successMsg && <span className="text-sm" style={{ color: 'var(--color-success)' }}>{successMsg}</span>}
             {error && <span className="text-sm" style={{ color: 'var(--color-danger)' }}>{error}</span>}
           </div>
 
-          {/* ── Scenario tests ── */}
-          <div className="space-y-3" style={{ paddingTop: '32px' }}>
-            <div className="flex items-center justify-between">
+          {/* ── Gold Standard Scenarios ── */}
+          <div style={{ paddingTop: '32px' }}>
+            {/* Section header */}
+            <div className="flex items-start justify-between gap-4 mb-4">
               <div>
                 <h2 className="text-lg font-semibold mb-1">Gold Standard Scenarios</h2>
                 <p className="text-sm" style={{ color: 'var(--color-muted)' }}>
-                  Ideal conversations used to evaluate and tune the agent. Static tests are from the codebase; custom tests are saved to the DB.
+                  Run all tests to see how your current prompt performs against the ideal conversations.
                 </p>
               </div>
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowCreate((v) => !v)}
-                style={{ flexShrink: 0 }}
-              >
-                {showCreate ? '✕ Cancel' : '+ New test'}
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  className="btn"
+                  onClick={() => setShowCreate((v) => !v)}
+                >
+                  {showCreate ? '✕ Cancel' : '+ New test'}
+                </button>
+                {runningAll ? (
+                  <button className="btn btn-danger" onClick={handleStop}>
+                    ■ Stop
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleRunAll}
+                    disabled={allTests.length === 0}
+                  >
+                    ▶ Run All
+                  </button>
+                )}
+              </div>
             </div>
 
-            {showCreate && (
-              <CreateTestForm
-                onSave={handleCreateTest}
-                onCancel={() => setShowCreate(false)}
-              />
+            {/* Progress bar */}
+            {runProgress && (
+              <div
+                className="card"
+                style={{
+                  padding: '12px 16px', marginBottom: '16px',
+                  display: 'flex', alignItems: 'center', gap: '12px',
+                }}
+              >
+                <div style={{ flex: 1, background: 'var(--color-border)', borderRadius: '9999px', height: '6px', overflow: 'hidden' }}>
+                  <div
+                    style={{
+                      height: '100%', borderRadius: '9999px',
+                      background: runningAll ? 'var(--color-accent)' : 'var(--color-success)',
+                      width: `${(runProgress.done / runProgress.total) * 100}%`,
+                      transition: 'width 300ms ease',
+                    }}
+                  />
+                </div>
+                <span className="text-sm shrink-0" style={{ color: 'var(--color-muted)', minWidth: '80px', textAlign: 'right' }}>
+                  {runningAll
+                    ? `Running ${runProgress.done + 1} / ${runProgress.total}`
+                    : `${runProgress.done} / ${runProgress.total} done`}
+                </span>
+              </div>
             )}
 
-            {/* Static tests from codebase */}
-            {ALL_TESTS.map((t) => (
-              <TestCard key={t.id} test={t} />
-            ))}
+            {showCreate && (
+              <div style={{ marginBottom: '12px' }}>
+                <CreateTestForm onSave={handleCreateTest} onCancel={() => setShowCreate(false)} />
+              </div>
+            )}
 
-            {/* DB tests */}
-            {testsLoading ? (
-              <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading custom tests…</p>
-            ) : dbTests.length > 0 ? (
-              dbTests.map((t) => (
+            <div className="space-y-3">
+              {allTests.map((t) => (
                 <TestCard
                   key={t.id}
                   test={t}
-                  onDelete={() => handleDeleteTest(t.id)}
+                  run={runs[t.id]}
+                  onDelete={'created_at' in t ? () => handleDeleteTest(t.id) : undefined}
                 />
-              ))
-            ) : null}
+              ))}
+              {testsLoading && (
+                <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading custom tests…</p>
+              )}
+            </div>
           </div>
         </div>
       )}
