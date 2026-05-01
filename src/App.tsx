@@ -14,6 +14,7 @@ import { FunctionCallsPage } from './pages/FunctionCalls';
 import { AdminsPage } from './pages/Admins';
 import { TestsPage } from './pages/Tests';
 import { TestDetailPage } from './pages/TestDetail';
+import { SystemPromptPage } from './pages/SystemPrompt';
 
 function Protected({ element }: { element: React.ReactNode }) {
   return <RequireAdmin>{element}</RequireAdmin>;
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="/admins" element={<Protected element={<AdminsPage />} />} />
         <Route path="/tests" element={<Protected element={<TestsPage />} />} />
         <Route path="/tests/:id" element={<Protected element={<TestDetailPage />} />} />
+        <Route path="/system-prompt" element={<Protected element={<SystemPromptPage />} />} />
       </Routes>
     </BrowserRouter>
   );

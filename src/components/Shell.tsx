@@ -9,6 +9,7 @@ const LINKS = [
   { to: '/function-calls', label: 'Function Calls' },
   { to: '/admins', label: 'Admins' },
   { to: '/tests', label: 'Tests' },
+  { to: '/system-prompt', label: 'System Prompt' },
 ];
 
 export function Shell({ email, children }: { email: string; children: React.ReactNode }) {
