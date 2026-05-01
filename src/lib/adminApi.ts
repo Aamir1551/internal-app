@@ -50,3 +50,27 @@ export async function getSystemPrompt(): Promise<{ prompt: string; source: 'db' 
 export async function saveSystemPrompt(value: string): Promise<void> {
   await call({ op: 'save_system_prompt', value });
 }
+
+export type TestMessage = { role: 'user' | 'agent'; content: string };
+export type TestCaseDb = {
+  id: string;
+  category: string;
+  description: string;
+  messages: TestMessage[];
+  created_at: string;
+};
+
+export async function listDbTests(): Promise<TestCaseDb[]> {
+  const { tests } = await call<{ tests: TestCaseDb[] }>({ op: 'list_tests' });
+  return tests;
+}
+
+export async function createDbTest(
+  test: Pick<TestCaseDb, 'id' | 'category' | 'description' | 'messages'>,
+): Promise<void> {
+  await call({ op: 'create_test', ...test });
+}
+
+export async function deleteDbTest(id: string): Promise<void> {
+  await call({ op: 'delete_test', id });
+}
