@@ -97,7 +97,7 @@ async function runTest(
   const msgs = test.messages as TestMessage[];
   const pairs: { user: string; gold: string }[] = [];
   for (let i = 0; i + 1 < msgs.length; i++) {
-    if (msgs[i].role === 'user' && (msgs[i + 1].role === 'agent' || msgs[i + 1].role === 'assistant')) {
+    if (msgs[i].role === 'user' && msgs[i + 1].role === 'agent') {
       pairs.push({ user: msgs[i].content, gold: msgs[i + 1].content });
       i++;
     }
