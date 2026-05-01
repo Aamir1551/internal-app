@@ -393,6 +393,74 @@ function CreateTestForm({
   );
 }
 
+// ── Report generation ─────────────────────────────────────────────────────────
+
+function generateReport(
+  systemPrompt: string,
+  allTests: (TestCase | TestCaseDb)[],
+  runs: Record<string, TestRun>,
+): string {
+  const date = new Date().toISOString().slice(0, 10);
+  const completedTests = allTests.filter((t) => runs[t.id]?.status === 'done' || runs[t.id]?.status === 'error');
+
+  const lines: string[] = [
+    `# BatleyGPT Agent Evaluation Report`,
+    `Date: ${date}`,
+    `Tests run: ${completedTests.length} / ${allTests.length}`,
+    ``,
+    `---`,
+    ``,
+    `## System Prompt`,
+    ``,
+    `\`\`\``,
+    systemPrompt.trim(),
+    `\`\`\``,
+    ``,
+    `---`,
+    ``,
+    `## Test Results`,
+    ``,
+  ];
+
+  for (const test of completedTests) {
+    const run = runs[test.id];
+    const statusLabel = run.status === 'done' ? 'completed' : `error: ${run.error ?? 'unknown'}`;
+    lines.push(`### ${test.id} — ${test.description}`);
+    lines.push(`Category: ${test.category} | Status: ${statusLabel}`);
+    lines.push(``);
+
+    for (let i = 0; i < run.turns.length; i++) {
+      const turn = run.turns[i];
+      lines.push(`#### Turn ${i + 1}`);
+      lines.push(``);
+      lines.push(`**User:**`);
+      lines.push(turn.userMessage);
+      lines.push(``);
+      lines.push(`**Gold Standard:**`);
+      lines.push(turn.goldResponse);
+      lines.push(``);
+      lines.push(`**Live Agent:**`);
+      lines.push(turn.agentResponse || '*(no response)*');
+      lines.push(``);
+    }
+
+    lines.push(`---`);
+    lines.push(``);
+  }
+
+  return lines.join('\n');
+}
+
+function downloadText(filename: string, content: string) {
+  const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export function SystemPromptPage() {
@@ -554,6 +622,18 @@ export function SystemPromptPage() {
                 >
                   {showCreate ? '✕ Cancel' : '+ New test'}
                 </button>
+                {Object.values(runs).some((r) => r.status === 'done' || r.status === 'error') && !runningAll && (
+                  <button
+                    className="btn"
+                    onClick={() => {
+                      const report = generateReport(value, allTests, runs);
+                      const date = new Date().toISOString().slice(0, 10);
+                      downloadText(`batleygpt-eval-${date}.md`, report);
+                    }}
+                  >
+                    ↓ Download Report
+                  </button>
+                )}
                 {runningAll ? (
                   <button className="btn btn-danger" onClick={handleStop}>
                     ■ Stop
