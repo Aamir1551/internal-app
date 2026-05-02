@@ -16,7 +16,6 @@ async function call<T>(body: object): Promise<T> {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-      'Cache-Control': 'no-store',
     },
     cache: 'no-store',
     body: JSON.stringify(body),
