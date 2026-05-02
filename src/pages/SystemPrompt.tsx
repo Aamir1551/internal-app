@@ -7,6 +7,7 @@ import {
   saveSystemPrompt,
   listDbTests,
   createDbTest,
+  updateDbTest,
   deleteDbTest,
   type TestCaseDb,
   type TestMessage,
@@ -210,14 +211,16 @@ function TurnComparison({ turn, streaming }: { turn: TurnResult; streaming: bool
 // ── Test card ─────────────────────────────────────────────────────────────────
 
 function TestCard({
-  test, run, onRun, onDelete,
+  test, run, onRun, onEdit, onDelete,
 }: {
   test: TestCase | TestCaseDb;
   run?: TestRun;
   onRun?: () => void;
+  onEdit?: (updated: Pick<TestCaseDb, 'id' | 'category' | 'description' | 'messages'>) => Promise<void>;
   onDelete?: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
   const isDb = 'created_at' in test;
 
   useEffect(() => {
@@ -235,9 +238,9 @@ function TestCard({
   return (
     <div className="card overflow-hidden">
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => { if (!editing) setOpen((o) => !o); }}
         className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left"
-        style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+        style={{ background: 'transparent', border: 'none', cursor: editing ? 'default' : 'pointer' }}
       >
         <div className="flex items-center gap-3 min-w-0">
           <span className="font-mono text-xs shrink-0" style={{ color: 'var(--color-muted)' }}>
@@ -248,10 +251,12 @@ function TestCard({
           {statusBadge}
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <span className="text-xs" style={{ color: 'var(--color-muted)' }}>
-            {open ? '▲ hide' : '▼ show'}
-          </span>
-          {onRun && (
+          {!editing && (
+            <span className="text-xs" style={{ color: 'var(--color-muted)' }}>
+              {open ? '▲ hide' : '▼ show'}
+            </span>
+          )}
+          {onRun && !editing && (
             <button
               onClick={(e) => { e.stopPropagation(); onRun(); }}
               className="btn"
@@ -261,9 +266,18 @@ function TestCard({
               {run?.status === 'running' ? '…' : '▶ Run'}
             </button>
           )}
-          {isDb && onDelete && (
+          {isDb && onEdit && !editing && (
             <button
-              onClick={(e) => { e.stopPropagation(); onDelete(); }}
+              onClick={(e) => { e.stopPropagation(); setEditing(true); setOpen(true); }}
+              className="btn"
+              style={{ padding: '2px 8px', fontSize: '12px' }}
+            >
+              Edit
+            </button>
+          )}
+          {isDb && onDelete && !editing && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onDelete!(); }}
               className="btn"
               style={{ color: 'var(--color-danger)', padding: '2px 8px', fontSize: '12px' }}
             >
@@ -275,7 +289,15 @@ function TestCard({
 
       {open && (
         <div style={{ borderTop: '1px solid var(--color-border)' }}>
-          {run ? (
+          {editing ? (
+            <div style={{ padding: '16px' }}>
+              <TestForm
+                initialValues={{ id: test.id, category: test.category, description: test.description, messages: test.messages as TestMessage[] }}
+                onSave={async (updated) => { await onEdit!(updated); setEditing(false); }}
+                onCancel={() => setEditing(false)}
+              />
+            </div>
+          ) : run ? (
             run.turns.length === 0 ? (
               <p style={{ padding: '16px', color: 'var(--color-muted)', fontSize: '0.875rem' }}>Starting…</p>
             ) : (
@@ -297,20 +319,24 @@ function TestCard({
   );
 }
 
-// ── Create test form ──────────────────────────────────────────────────────────
+// ── Test form (create + edit) ──────────────────────────────────────────────────
 
-function CreateTestForm({
+function TestForm({
+  initialValues,
   onSave, onCancel,
 }: {
+  initialValues?: Pick<TestCaseDb, 'id' | 'category' | 'description' | 'messages'>;
   onSave: (test: Pick<TestCaseDb, 'id' | 'category' | 'description' | 'messages'>) => Promise<void>;
   onCancel: () => void;
 }) {
-  const [category, setCategory] = useState('food');
-  const [description, setDescription] = useState('');
-  const [messages, setMessages] = useState<TestMessage[]>([
-    { role: 'user', content: '' },
-    { role: 'agent', content: '' },
-  ]);
+  const isEdit = !!initialValues;
+  const [category, setCategory] = useState(initialValues?.category ?? 'food');
+  const [description, setDescription] = useState(initialValues?.description ?? '');
+  const [messages, setMessages] = useState<TestMessage[]>(
+    initialValues?.messages && initialValues.messages.length >= 2
+      ? initialValues.messages
+      : [{ role: 'user', content: '' }, { role: 'agent', content: '' }],
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -331,7 +357,7 @@ function CreateTestForm({
     if (!description.trim()) { setError('Description is required.'); return; }
     const validMessages = messages.filter((m) => m.content.trim());
     if (validMessages.length < 2) { setError('Add at least 2 messages.'); return; }
-    const id = `${Date.now()}_${category}`;
+    const id = initialValues?.id ?? `${Date.now()}_${category}`;
     setSaving(true); setError(null);
     try {
       await onSave({ id, category, description: description.trim(), messages: validMessages });
@@ -343,7 +369,7 @@ function CreateTestForm({
 
   return (
     <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <h3 className="text-base font-semibold">New Test</h3>
+      <h3 className="text-base font-semibold">{isEdit ? 'Edit Test' : 'New Test'}</h3>
       <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: '12px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <label className="text-xs font-medium" style={{ color: 'var(--color-muted)' }}>Category</label>
@@ -396,7 +422,7 @@ function CreateTestForm({
       {error && <p className="text-sm" style={{ color: 'var(--color-danger)' }}>{error}</p>}
       <div style={{ display: 'flex', gap: '8px' }}>
         <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving…' : 'Save test'}
+          {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Save test'}
         </button>
         <button className="btn" onClick={onCancel} disabled={saving}>Cancel</button>
       </div>
@@ -525,6 +551,11 @@ export function SystemPromptPage() {
     await createDbTest(test);
     setDbTests((prev) => [...prev, { ...test, created_at: new Date().toISOString() }]);
     setShowCreate(false);
+  };
+
+  const handleEditTest = async (updated: Pick<TestCaseDb, 'id' | 'category' | 'description' | 'messages'>) => {
+    await updateDbTest(updated);
+    setDbTests((prev) => prev.map((t) => t.id === updated.id ? { ...t, ...updated } : t));
   };
 
   const handleDeleteTest = async (id: string) => {
@@ -722,7 +753,7 @@ export function SystemPromptPage() {
 
             {showCreate && (
               <div style={{ marginBottom: '12px' }}>
-                <CreateTestForm onSave={handleCreateTest} onCancel={() => setShowCreate(false)} />
+                <TestForm onSave={handleCreateTest} onCancel={() => setShowCreate(false)} />
               </div>
             )}
 
@@ -733,6 +764,7 @@ export function SystemPromptPage() {
                   test={t}
                   run={runs[t.id]}
                   onRun={() => handleRunOne(t)}
+                  onEdit={'created_at' in t ? handleEditTest : undefined}
                   onDelete={'created_at' in t ? () => handleDeleteTest(t.id) : undefined}
                 />
               ))}

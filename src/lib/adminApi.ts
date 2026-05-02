@@ -73,6 +73,12 @@ export async function createDbTest(
   await call({ op: 'create_test', ...test });
 }
 
+export async function updateDbTest(
+  test: Pick<TestCaseDb, 'id' | 'category' | 'description' | 'messages'>,
+): Promise<void> {
+  await call({ op: 'update_test', ...test });
+}
+
 export async function deleteDbTest(id: string): Promise<void> {
   await call({ op: 'delete_test', id });
 }
