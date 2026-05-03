@@ -78,6 +78,12 @@ export async function updateDbTest(
   await call({ op: 'update_test', ...test });
 }
 
+export async function upsertDbTest(
+  test: Pick<TestCaseDb, 'id' | 'category' | 'description' | 'messages'>,
+): Promise<void> {
+  await call({ op: 'upsert_test', ...test });
+}
+
 export async function deleteDbTest(id: string): Promise<void> {
   await call({ op: 'delete_test', id });
 }

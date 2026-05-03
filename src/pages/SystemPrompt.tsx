@@ -8,6 +8,7 @@ import {
   listDbTests,
   createDbTest,
   updateDbTest,
+  upsertDbTest,
   deleteDbTest,
   type TestCaseDb,
   type TestMessage,
@@ -266,7 +267,7 @@ function TestCard({
               {run?.status === 'running' ? '…' : '▶ Run'}
             </button>
           )}
-          {isDb && onEdit && !editing && (
+          {onEdit && !editing && (
             <button
               onClick={(e) => { e.stopPropagation(); setEditing(true); setOpen(true); }}
               className="btn"
@@ -558,6 +559,15 @@ export function SystemPromptPage() {
     setDbTests((prev) => prev.map((t) => t.id === updated.id ? { ...t, ...updated } : t));
   };
 
+  const handleEditStaticTest = async (updated: Pick<TestCaseDb, 'id' | 'category' | 'description' | 'messages'>) => {
+    await upsertDbTest(updated);
+    setDbTests((prev) => {
+      const exists = prev.some((t) => t.id === updated.id);
+      if (exists) return prev.map((t) => t.id === updated.id ? { ...t, ...updated } : t);
+      return [...prev, { ...updated, created_at: new Date().toISOString() }];
+    });
+  };
+
   const handleDeleteTest = async (id: string) => {
     await deleteDbTest(id);
     setDbTests((prev) => prev.filter((t) => t.id !== id));
@@ -636,7 +646,11 @@ export function SystemPromptPage() {
   };
 
   const isDirty = value !== saved;
-  const allTests: (TestCase | TestCaseDb)[] = [...ALL_TESTS, ...dbTests];
+  const dbTestIds = new Set(dbTests.map((t) => t.id));
+  const allTests: (TestCase | TestCaseDb)[] = [
+    ...ALL_TESTS.filter((t) => !dbTestIds.has(t.id)),
+    ...dbTests,
+  ];
 
   return (
     <>
@@ -764,7 +778,7 @@ export function SystemPromptPage() {
                   test={t}
                   run={runs[t.id]}
                   onRun={() => handleRunOne(t)}
-                  onEdit={'created_at' in t ? handleEditTest : undefined}
+                  onEdit={'created_at' in t ? handleEditTest : handleEditStaticTest}
                   onDelete={'created_at' in t ? () => handleDeleteTest(t.id) : undefined}
                 />
               ))}
