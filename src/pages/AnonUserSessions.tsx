@@ -23,6 +23,7 @@ export function AnonUserSessionsPage() {
         .from('function_call_logs')
         .select('session_id, user_prompt, created_at')
         .eq('anon_id', anonId)
+        .not('session_id', 'is', null)
         .order('created_at', { ascending: true })
         .limit(5000);
 
@@ -33,7 +34,7 @@ export function AnonUserSessionsPage() {
 
       const sessionMap = new Map<string, { prompts: string[]; lastAt: string }>();
       for (const row of rows) {
-        const sid = row.session_id ?? 'unknown';
+        const sid = row.session_id as string;
         if (!sessionMap.has(sid)) sessionMap.set(sid, { prompts: [], lastAt: row.created_at });
         const s = sessionMap.get(sid)!;
         if (row.user_prompt && !s.prompts.includes(row.user_prompt)) s.prompts.push(row.user_prompt);
