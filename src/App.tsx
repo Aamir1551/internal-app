@@ -5,6 +5,8 @@ import { UnauthorizedPage } from './pages/Unauthorized';
 import { DashboardPage } from './pages/Dashboard';
 import { UsersPage } from './pages/Users';
 import { UserSessionsPage } from './pages/UserSessions';
+import { AnonUserSessionsPage } from './pages/AnonUserSessions';
+import { AnonSessionPage } from './pages/AnonSession';
 import { SessionPage } from './pages/Session';
 import { PendingPage } from './pages/Pending';
 import { DirectoryPage } from './pages/Directory';
@@ -29,6 +31,8 @@ export default function App() {
         <Route path="/" element={<Protected element={<DashboardPage />} />} />
         <Route path="/users" element={<Protected element={<UsersPage />} />} />
         <Route path="/users/:userId" element={<Protected element={<UserSessionsPage />} />} />
+        <Route path="/anon/:anonId" element={<Protected element={<AnonUserSessionsPage />} />} />
+        <Route path="/anon/:anonId/sessions/:sessionId" element={<Protected element={<AnonSessionPage />} />} />
         <Route path="/sessions/:sessionId" element={<Protected element={<SessionPage />} />} />
         <Route path="/pending" element={<Protected element={<PendingPage />} />} />
         <Route path="/directory" element={<Protected element={<DirectoryPage />} />} />
