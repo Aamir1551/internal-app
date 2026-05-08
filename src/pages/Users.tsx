@@ -130,22 +130,6 @@ function SignedInUsers() {
 
 const PAGE_SIZE = 100;
 
-function toAnonRows(data: { anon_id: string; created_at: string }[]): AnonRow[] {
-  const map = new Map<string, { count: number; lastSeen: string }>();
-  for (const row of data) {
-    const existing = map.get(row.anon_id);
-    if (!existing) {
-      map.set(row.anon_id, { count: 1, lastSeen: row.created_at });
-    } else {
-      existing.count++;
-      if (row.created_at > existing.lastSeen) existing.lastSeen = row.created_at;
-    }
-  }
-  return [...map.entries()]
-    .map(([anon_id, { count, lastSeen }]) => ({ anon_id, promptCount: count, lastSeen }))
-    .sort((a, b) => new Date(b.lastSeen).getTime() - new Date(a.lastSeen).getTime());
-}
-
 function AnonUsers() {
   const [anons, setAnons] = useState<AnonRow[]>([]);
   const [offset, setOffset] = useState(0);
@@ -156,17 +140,31 @@ function AnonUsers() {
 
   const fetchPage = async (from: number, append: boolean) => {
     const { data, error: e } = await supabase
-      .from('function_call_logs')
-      .select('anon_id, created_at')
-      .not('anon_id', 'is', null)
-      .not('anon_id', 'like', 'eval-%')
-      .order('created_at', { ascending: false })
+      .from('anon_sessions')
+      .select('anon_id, updated_at')
+      .order('updated_at', { ascending: false })
       .range(from, from + PAGE_SIZE - 1);
 
     if (e) { setError(e.message); return; }
-    const rows = (data ?? []) as { anon_id: string; created_at: string }[];
+    const rows = (data ?? []) as { anon_id: string; updated_at: string }[];
     setHasMore(rows.length === PAGE_SIZE);
-    const page = toAnonRows(rows);
+
+    // Dedupe by anon_id, keep latest updated_at and count sessions
+    const map = new Map<string, { count: number; lastSeen: string }>();
+    for (const row of rows) {
+      const existing = map.get(row.anon_id);
+      if (!existing) {
+        map.set(row.anon_id, { count: 1, lastSeen: row.updated_at });
+      } else {
+        existing.count++;
+        if (row.updated_at > existing.lastSeen) existing.lastSeen = row.updated_at;
+      }
+    }
+
+    const page: AnonRow[] = [...map.entries()]
+      .map(([anon_id, { count, lastSeen }]) => ({ anon_id, promptCount: count, lastSeen }))
+      .sort((a, b) => new Date(b.lastSeen).getTime() - new Date(a.lastSeen).getTime());
+
     setAnons((prev) => append ? [...prev, ...page] : page);
   };
 
@@ -197,7 +195,7 @@ function AnonUsers() {
           <thead>
             <tr className="text-left" style={{ background: '#0e1115' }}>
               <th className="px-4 py-3 font-medium" style={{ color: 'var(--color-muted)' }}>Anon ID</th>
-              <th className="px-4 py-3 font-medium text-right" style={{ color: 'var(--color-muted)' }}>Prompts</th>
+              <th className="px-4 py-3 font-medium text-right" style={{ color: 'var(--color-muted)' }}>Sessions</th>
               <th className="px-4 py-3 font-medium" style={{ color: 'var(--color-muted)' }}>Last seen</th>
               <th className="px-4 py-3"></th>
             </tr>
