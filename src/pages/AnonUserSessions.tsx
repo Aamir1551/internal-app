@@ -9,6 +9,7 @@ type AnonSession = {
   firstPrompt: string;
   turnCount: number;
   lastAt: string;
+  untracked?: boolean;
 };
 
 export function AnonUserSessionsPage() {
@@ -23,7 +24,6 @@ export function AnonUserSessionsPage() {
         .from('function_call_logs')
         .select('session_id, user_prompt, created_at')
         .eq('anon_id', anonId)
-        .not('session_id', 'is', null)
         .order('created_at', { ascending: true })
         .limit(5000);
 
@@ -33,8 +33,18 @@ export function AnonUserSessionsPage() {
       const rows = (data ?? []) as LogRow[];
 
       const sessionMap = new Map<string, { prompts: string[]; lastAt: string }>();
+      let untracked = 0;
+      let untrackedLastAt = '';
+      let untrackedFirstPrompt = '';
+
       for (const row of rows) {
-        const sid = row.session_id as string;
+        if (!row.session_id) {
+          untracked++;
+          untrackedLastAt = row.created_at;
+          if (!untrackedFirstPrompt && row.user_prompt) untrackedFirstPrompt = row.user_prompt;
+          continue;
+        }
+        const sid = row.session_id;
         if (!sessionMap.has(sid)) sessionMap.set(sid, { prompts: [], lastAt: row.created_at });
         const s = sessionMap.get(sid)!;
         if (row.user_prompt && !s.prompts.includes(row.user_prompt)) s.prompts.push(row.user_prompt);
@@ -47,8 +57,19 @@ export function AnonUserSessionsPage() {
           firstPrompt: prompts[0] ?? 'Unknown',
           turnCount: prompts.length,
           lastAt,
+          untracked: false,
         }))
         .sort((a, b) => new Date(b.lastAt).getTime() - new Date(a.lastAt).getTime());
+
+      if (untracked > 0) {
+        list.push({
+          session_id: '__untracked__',
+          firstPrompt: untrackedFirstPrompt || 'Unknown',
+          turnCount: untracked,
+          lastAt: untrackedLastAt,
+          untracked: true,
+        });
+      }
 
       setSessions(list);
     })();
@@ -77,7 +98,14 @@ export function AnonUserSessionsPage() {
             {sessions.length} {sessions.length === 1 ? 'session' : 'sessions'}
           </h2>
           <div className="space-y-2">
-            {sessions.map((s) => (
+            {sessions.map((s) => s.untracked ? (
+              <div key="untracked" className="card p-4" style={{ opacity: 0.6 }}>
+                <div className="font-medium truncate">{s.firstPrompt}</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--color-muted)' }}>
+                  {s.turnCount} {s.turnCount === 1 ? 'message' : 'messages'} before session tracking · {formatDate(s.lastAt)}
+                </div>
+              </div>
+            ) : (
               <Link
                 key={s.session_id}
                 to={`/anon/${anonId}/sessions/${s.session_id}`}
