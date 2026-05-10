@@ -3,13 +3,14 @@ import { Link, useParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { getAuthUser, type AuthUser } from '@/lib/adminApi';
 
-type Session = { id: string; title: string; created_at: string; updated_at: string; deleted: boolean | null };
+type Session = { id: string; title: string; created_at: string; updated_at: string; deleted: boolean | null; flagged: boolean };
 
 export function UserSessionsPage() {
   const { userId = '' } = useParams();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [sessions, setSessions] = useState<Session[] | null>(null);
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -17,7 +18,7 @@ export function UserSessionsPage() {
       const [u, sess] = await Promise.all([
         getAuthUser(userId),
         supabase.from('sessions')
-          .select('id, title, created_at, updated_at, deleted')
+          .select('id, title, created_at, updated_at, deleted, flagged')
           .eq('user_id', userId)
           .order('updated_at', { ascending: false }),
       ]);
@@ -53,11 +54,20 @@ export function UserSessionsPage() {
         </div>
       ) : (
         <>
-          <h2 className="text-sm font-medium mb-3" style={{ color: 'var(--color-muted)' }}>
-            {sessions.length} chat {sessions.length === 1 ? 'session' : 'sessions'}
-          </h2>
+          <div className="flex items-center gap-3 mb-3">
+            <h2 className="text-sm font-medium" style={{ color: 'var(--color-muted)' }}>
+              {sessions.length} chat {sessions.length === 1 ? 'session' : 'sessions'}
+            </h2>
+            <button
+              onClick={() => setShowFlaggedOnly((v) => !v)}
+              className={`pill cursor-pointer transition-colors ${showFlaggedOnly ? 'pill-warning' : ''}`}
+              style={showFlaggedOnly ? {} : { cursor: 'pointer' }}
+            >
+              {showFlaggedOnly ? 'Flagged only ×' : `Flagged (${sessions.filter((s) => s.flagged).length})`}
+            </button>
+          </div>
           <div className="space-y-2">
-            {sessions.map((s) => (
+            {sessions.filter((s) => !showFlaggedOnly || s.flagged).map((s) => (
               <Link
                 key={s.id}
                 to={`/sessions/${s.id}`}
@@ -67,6 +77,7 @@ export function UserSessionsPage() {
                   <div className="flex items-center gap-2">
                     <div className="font-medium truncate">{s.title || 'Untitled chat'}</div>
                     {s.deleted && <span className="pill pill-danger">Deleted</span>}
+                    {s.flagged && <span className="pill pill-warning">Flagged</span>}
                   </div>
                   <div className="text-xs mt-1" style={{ color: 'var(--color-muted)' }}>
                     {counts[s.id] ?? '—'} messages · updated {formatDate(s.updated_at)}

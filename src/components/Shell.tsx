@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 const LINKS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/users', label: 'Users & Chats' },
+  { to: '/flagged', label: 'Flagged' },
   { to: '/pending', label: 'Pending' },
   { to: '/directory', label: 'Directory' },
   { to: '/function-calls', label: 'Function Calls' },

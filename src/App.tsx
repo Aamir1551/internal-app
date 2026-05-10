@@ -17,6 +17,7 @@ import { AdminsPage } from './pages/Admins';
 import { TestsPage } from './pages/Tests';
 import { TestDetailPage } from './pages/TestDetail';
 import { SystemPromptPage } from './pages/SystemPrompt';
+import { FlaggedChatsPage } from './pages/FlaggedChats';
 
 function Protected({ element }: { element: React.ReactNode }) {
   return <RequireAdmin>{element}</RequireAdmin>;
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/anon/:anonId" element={<Protected element={<AnonUserSessionsPage />} />} />
         <Route path="/anon/:anonId/sessions/:sessionId" element={<Protected element={<AnonSessionPage />} />} />
         <Route path="/sessions/:sessionId" element={<Protected element={<SessionPage />} />} />
+        <Route path="/flagged" element={<Protected element={<FlaggedChatsPage />} />} />
         <Route path="/pending" element={<Protected element={<PendingPage />} />} />
         <Route path="/directory" element={<Protected element={<DirectoryPage />} />} />
         <Route path="/directory/:table" element={<Protected element={<DirectoryTablePage />} />} />

@@ -5,7 +5,7 @@ import { getAuthUser } from '@/lib/adminApi';
 
 type Session = {
   id: string; title: string; user_id: string;
-  created_at: string; updated_at: string; deleted: boolean | null;
+  created_at: string; updated_at: string; deleted: boolean | null; flagged: boolean;
 };
 type Message = { id: string; type: 'user' | 'assistant'; content: string; created_at: string };
 type FnCall = {
@@ -70,13 +70,14 @@ export function SessionPage() {
   const [timeline, setTimeline] = useState<TimelineItem[]>([]);
   const [ownerEmail, setOwnerEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [flagging, setFlagging] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const { data: s, error: e } = await supabase
         .from('sessions')
-        .select('id, title, user_id, created_at, updated_at, deleted')
+        .select('id, title, user_id, created_at, updated_at, deleted, flagged')
         .eq('id', sessionId)
         .maybeSingle();
       if (cancelled) return;
@@ -108,6 +109,18 @@ export function SessionPage() {
     return () => { cancelled = true; };
   }, [sessionId]);
 
+  const toggleFlag = async () => {
+    if (!session) return;
+    setFlagging(true);
+    const next = !session.flagged;
+    const { error: e } = await supabase
+      .from('sessions')
+      .update({ flagged: next })
+      .eq('id', session.id);
+    if (!e) setSession((s) => s ? { ...s, flagged: next } : s);
+    setFlagging(false);
+  };
+
   if (error) return <div className="card p-6 text-sm" style={{ color: 'var(--color-danger)' }}>{error}</div>;
   if (!session) return <div className="card p-8 text-center text-sm" style={{ color: 'var(--color-muted)' }}>Loading…</div>;
 
@@ -125,6 +138,15 @@ export function SessionPage() {
             {session.deleted && ' · deleted by user'}
           </p>
         </div>
+        {session.flagged && <span className="pill pill-warning">Flagged</span>}
+        <button
+          onClick={toggleFlag}
+          disabled={flagging}
+          className={`btn ${session.flagged ? 'btn-danger' : ''}`}
+          style={session.flagged ? {} : { color: 'var(--color-warning)' }}
+        >
+          {flagging ? '…' : session.flagged ? 'Unflag' : 'Flag'}
+        </button>
       </div>
 
       <div className="flex flex-col gap-3 max-w-3xl">

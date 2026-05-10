@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { KIND_ORDER, KINDS } from '@/lib/kinds';
@@ -80,6 +80,8 @@ export function DashboardPage() {
         </div>
       )}
 
+      <Todos />
+
       <h2 className="text-sm font-medium mb-3" style={{ color: 'var(--color-muted)' }}>Quick links</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <QuickLink to="/users" title="Users & Chats" hint="Search by email → full conversation history." />
@@ -98,5 +100,115 @@ function QuickLink({ to, title, hint }: { to: string; title: string; hint: strin
       <div className="font-medium mb-1">{title}</div>
       <div className="text-xs" style={{ color: 'var(--color-muted)' }}>{hint}</div>
     </Link>
+  );
+}
+
+type Todo = { id: string; text: string; done: boolean; created_at: string };
+
+function Todos() {
+  const [todos, setTodos] = useState<Todo[] | null>(null);
+  const [draft, setDraft] = useState('');
+  const [adding, setAdding] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from('admin_todos')
+      .select('id, text, done, created_at')
+      .order('created_at', { ascending: true })
+      .then(({ data }) => { if (!cancelled) setTodos((data ?? []) as Todo[]); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const addTodo = async () => {
+    const text = draft.trim();
+    if (!text) return;
+    setAdding(true);
+    const { data } = await supabase
+      .from('admin_todos')
+      .insert({ text })
+      .select('id, text, done, created_at')
+      .single();
+    if (data) setTodos((prev) => [...(prev ?? []), data as Todo]);
+    setDraft('');
+    setAdding(false);
+    inputRef.current?.focus();
+  };
+
+  const toggleDone = async (todo: Todo) => {
+    const next = !todo.done;
+    await supabase.from('admin_todos').update({ done: next }).eq('id', todo.id);
+    setTodos((prev) => prev?.map((t) => t.id === todo.id ? { ...t, done: next } : t) ?? null);
+  };
+
+  const deleteTodo = async (id: string) => {
+    await supabase.from('admin_todos').delete().eq('id', id);
+    setTodos((prev) => prev?.filter((t) => t.id !== id) ?? null);
+  };
+
+  const pending = todos?.filter((t) => !t.done) ?? [];
+  const done = todos?.filter((t) => t.done) ?? [];
+
+  return (
+    <div className="mb-10">
+      <h2 className="text-sm font-medium mb-3" style={{ color: 'var(--color-muted)' }}>
+        TODOs {todos !== null && `· ${pending.length} open`}
+      </h2>
+      <div className="card overflow-hidden">
+        {todos === null ? (
+          <div className="p-6 text-sm text-center" style={{ color: 'var(--color-muted)' }}>Loading…</div>
+        ) : (
+          <>
+            {todos.length === 0 && (
+              <div className="p-6 text-sm text-center" style={{ color: 'var(--color-muted)' }}>No TODOs yet.</div>
+            )}
+            {[...pending, ...done].map((todo) => (
+              <div
+                key={todo.id}
+                className="flex items-center gap-3 px-4 py-3 border-b last:border-b-0"
+                style={{ borderColor: 'var(--color-border)' }}
+              >
+                <input
+                  type="checkbox"
+                  checked={todo.done}
+                  onChange={() => toggleDone(todo)}
+                  className="shrink-0 cursor-pointer"
+                  style={{ accentColor: 'var(--color-accent)' }}
+                />
+                <span
+                  className="flex-1 text-sm"
+                  style={todo.done ? { color: 'var(--color-muted)', textDecoration: 'line-through' } : undefined}
+                >
+                  {todo.text}
+                </span>
+                <button
+                  onClick={() => deleteTodo(todo.id)}
+                  className="text-xs shrink-0"
+                  style={{ color: 'var(--color-muted)' }}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            <div className="flex items-center gap-2 px-4 py-3">
+              <input
+                ref={inputRef}
+                type="text"
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') addTodo(); }}
+                placeholder="Add a TODO…"
+                className="input flex-1"
+                disabled={adding}
+              />
+              <button onClick={addTodo} disabled={adding || !draft.trim()} className="btn btn-primary shrink-0">
+                Add
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
